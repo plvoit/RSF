@@ -1,6 +1,5 @@
 ### This script does an analysis and visualisation of predicted precipitation values compared to
 ### observed values. Monthly, and yearly sums, correlation, error analysis, sums of squares etc...
-##test
 
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
