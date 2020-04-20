@@ -1,0 +1,257 @@
+---
+title: "Vergleich Messwerte-ERA5 Downscaling"
+author: "Paul Voit"
+date: "15 4 2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+rm(list = ls())
+library(PaulsPack)
+
+Pera <- read.csv("~/Workspace/RioSaoFrancisco/xds_gerd/xds_gerd/brazil/era5/P.csv", check.names = FALSE)
+Pobs <- read.csv("~/Workspace/RioSaoFrancisco/xds_gerd/xds_gerd/brazil/obs/P.csv", na.strings = c("-999","-999.0","-99.9"), check.names = FALSE)
+
+### filter out the stations that are not included in obs5
+Pobs <- Pobs[,colnames(Pera)]
+
+## create Date column, kick out D,M,Y column
+Pera$Date <- as.POSIXct(paste(Pera$D,Pera$M,Pera$Y, sep= "."),tz ="GMT",format = c("%d.%m.%Y"))
+Pera <-  Pera[,c(ncol(Pera),1:ncol(Pera)-1)]
+Pera <-  Pera[,c(1,5:ncol(Pera))]
+
+Pobs$Date <- as.POSIXct(paste(Pobs$D,Pobs$M,Pobs$Y, sep= "."),tz ="GMT",format = c("%d.%m.%Y"))
+Pobs <-  Pobs[,c(ncol(Pobs),1:ncol(Pobs)-1)]
+Pobs <-  Pobs[,c(1,5:ncol(Pobs))]
+
+### select the dates contained in both dataframes
+Pobs <- Pobs[Pobs$Date >= min(Pera$Date)  ,]
+Pera <- Pera[Pera$Date <= max(Pobs$Date),]
+
+## create monthly sums
+Pobs_month <- aggregate_by_time(Pobs,c(2:ncol(Pobs)),"1 month", sum, right = FALSE)
+Pera_month <- aggregate_by_time(Pera,c(2:ncol(Pera)),"1 month", sum, right = FALSE)
+
+Pobs_month$Date <- as.POSIXct(Pobs_month$Group.1,tz ="GMT",format = c("%Y-%m-%d"))
+Pera_month$Date <- as.POSIXct(Pera_month$Group.1,tz ="GMT",format = c("%Y-%m-%d"))
+
+Pera_month <- Pera_month[,c(ncol(Pera_month),3:ncol(Pera_month)-1)]
+Pobs_month <- Pobs_month[,c(ncol(Pobs_month),3:ncol(Pobs_month)-1)]
+
+
+
+### Create the  monthly residuals for every station
+Pres_month <- Pera_month[,2:ncol(Pera_month)] - Pobs_month[,2:ncol(Pobs_month)]
+Pres_month <- cbind(Pobs_month$Date, Pres_month)
+names(Pres_month) <- c("Date",names(Pobs_month)[2:ncol(Pobs_month)])
+
+
+###Yearly Sums
+Pobs_year <- aggregate_by_time(Pobs,c(2:ncol(Pobs)),"1 year", sum, right = FALSE)
+Pera_year <- aggregate_by_time(Pera,c(2:ncol(Pera)),"1 year", sum, right = FALSE)
+
+Pobs_year$Date <- as.POSIXct(Pobs_year$Group.1,tz ="GMT",format = c("%Y-%m-%d"))
+Pera_year$Date <- as.POSIXct(Pera_year$Group.1,tz ="GMT",format = c("%Y-%m-%d"))
+
+Pera_year <- Pera_year[,c(ncol(Pera_year),3:ncol(Pera_year)-1)]
+Pobs_year <- Pobs_year[,c(ncol(Pobs_year),3:ncol(Pobs_year)-1)]
+
+
+### To aggregate to yearly sums, years with only NA appear as sum = 0. Set back years with 0 to NA
+### that in a whole year no precipitation occured
+Pobs_year[Pobs_year == 0 ] <- NA
+
+### now with this the yearly residuals have to be calculated again
+Pres_year <- (Pera_year[,2:ncol(Pera_year)]-Pobs_year[,2:ncol(Pobs_year)])
+Pres_year <- cbind(Pobs_year$Date, Pres_year)
+names(Pres_year) <- c("Date",names(Pres_year)[2:ncol(Pres_year)])
+
+### yearly RMSE per station
+RMSE_yearly <-  c()
+
+suppressWarnings( for ( i in 2:ncol(Pres_year)){
+ RMSE_yearly[i] <- mean(sqrt(Pres_year[,i])^2, na.rm = TRUE)
+ names(RMSE_yearly)[i] <- names(Pres_year)[i]
+})
+
+
+#RMSE_yearly
+
+### mean yearly Precipitation observed
+mean_obs <- c()
+for ( i in 2:ncol(Pobs_year)){
+  mean_obs[i] <- mean(Pobs_year[,i], na.rm = TRUE)
+  names(mean_obs)[i] <- names(Pobs_year)[i]
+}
+
+#mean_obs
+
+### mean error in percent
+mean_error_percent <- round(RMSE_yearly / mean_obs * 100, digits = 1)
+#mean_error_percent
+#summary(mean_error_percent)
+
+#length(mean_error_percent[mean_error_percent <= 25])
+
+# correlatiocoeff. of daily values
+correlation <- c()
+for (i in 2:ncol(Pobs) ){
+  correlation[i] <- cor(Pobs[,i],Pera[,i],use = "complete.obs")
+  names(correlation)[i] <- names(Pobs)[i]
+}
+#summary(correlation)
+
+
+## aggregate residuals for each month -> which month have the highest uncertainty?
+Pres_month$month <- as.factor(format(Pres_month$Date, format = c("%m")))
+Monthly_res <- aggregate(Pres_month[,2:ncol(Pres_month)-1], by = list(Pres_month$month),mean,na.action = na.omit)
+Monthly_res <-  Monthly_res[,c(1,3:ncol(Monthly_res))]
+names(Monthly_res)[1] <-  "Month"
+
+# plot the mean monthly residuals for each station
+#for (i in 2:ncol(Monthly_res)){
+#plot(Monthly_res[,i]~Monthly_res$Month, xlab = "Month", ylab = "Residual (mm)", main = colnames(Monthly_res)[i])
+#}
+
+#### mean monthly error for all stations
+Mme_total <- rowMeans(Monthly_res[,2:ncol(Monthly_res)])
+Mme_total <- as.data.frame(cbind(Monthly_res$Month,Mme_total))
+names(Mme_total)[1] <- "Month"
+#Mme_total
+
+### mean monthly observed precipitation
+Pobs_month$month <- as.factor(format(Pobs_month$Date, format = c("%m")))
+Monthly_obs <- aggregate(Pobs_month[,2:ncol(Pobs_month)-1], by = list(Pobs_month$month),mean,na.action = na.omit)
+Monthly_obs <-  Monthly_obs[,c(1,3:ncol(Monthly_obs))]
+names(Monthly_obs)[1] <-  "Month"
+
+### mean monthly predicted precipitation
+Pera_month$month <- as.factor(format(Pera_month$Date, format = c("%m")))
+Monthly_era <- aggregate(Pera_month[,2:ncol(Pera_month)-1], by = list(Pera_month$month),mean,na.action = na.omit)
+Monthly_era <-  Monthly_era[,c(1,3:ncol(Monthly_era))]
+names(Monthly_era)[1] <-  "Month"
+
+
+
+## mean (over all stations) monthly observed precipitation
+Mmo_total <- rowMeans(Monthly_obs[,2:ncol(Monthly_obs)])
+Mmo_total <- as.data.frame(cbind(Monthly_obs$Month, Mmo_total))
+names(Mmo_total)[1] <- "Month"
+#Mmo_total
+
+## mean (over all stations) monthly predicted precipitation
+Mmp_total <- rowMeans(Monthly_era[,2:ncol(Monthly_era)])
+Mmp_total <- as.data.frame(cbind(Monthly_era$Month, Mmp_total))
+names(Mmp_total)[1] <- "Month"
+#Mmp_total
+
+
+#plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", main = "Mean monthly #precipitation")
+#lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l")
+#legend("topright", legend = c("Observed","Predicted"), col = c("black","red"), lty=1, cex=0.8)
+
+### Die Vorhersage scheint den Niederschlag grundlegend zu überschätzen.
+
+
+### mean (over all stations) monthly error in percent of the mean observed precipitation per month
+Mme_percent <-  Mme_total$Mme_total/Mmo_total$Mmo_total * 100
+names(Mme_percent) <- Mme_total$Month
+#Mme_percent
+
+#plot(Mme_percent~Mmo_total$Month, type = "l")
+
+### Der durchschnittliche prozentuale Fehler ist am höchsten in der Trockenzeit
+#for ( i in 2:ncol(Monthly_res)){
+#  barplot(Monthly_res[,i]~Monthly_res$Month, main = paste("Residuals", colnames(Monthly_res)[i]), xlab = "Month")
+#}
+# evt. crosscorrelation
+# autocorrelation of residual plot ?
+## prozentualer Residuenplot?
+
+
+
+
+```
+##
+RMSE für jede Station
+```{r}
+RMSE_yearly <- RMSE_yearly[-1]
+RMSE_yearly <- as.data.frame(trunc(RMSE_yearly))
+names(RMSE_yearly) <- c("RMSE yearly [mm]")
+RMSE_yearly
+```
+##
+```{r}
+boxplot(Pres_year[,runif(6,2,65)], main = "Yearly resisiduals", ylab = "[mm]", xlab = "Station ID")
+abline(h = 0, col="red" ,lty = 2)
+```
+
+
+
+##
+Durschnittlicher Fehler in Prozent für jede Station
+```{r}
+mean_error_percent
+summary(mean_error_percent)
+
+```
+ 
+##
+Korrelation zwischen beobachteten Werten und simulierten Werten
+```{r}
+summary(correlation)
+```
+
+##
+```{r}
+plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", main = "Mean monthly precipitation")
+lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l")
+legend("topright", legend = c("Observed","Predicted"), col = c("black","red"), lty=1, cex=0.8)
+
+
+```
+
+##
+
+```{r}
+plot(Mme_percent~Mmo_total$Month, type = "l", main = "Mean monthly error [%]", xlab = "Month", ylab="error [%]")
+```
+
+##
+
+```{r}
+
+## Station information
+stations <- read.csv("~/Workspace/RioSaoFrancisco/xds_gerd/xds_gerd/brazil/meta.txt", comment.char="#")
+### plot mean_yearly_residuals against station altitude
+
+mean_error_percent <- as.data.frame(mean_error_percent)
+mean_error_percent <- cbind(names(Pobs)[2:length(names(Pobs))], mean_error_percent[2:nrow(mean_error_percent),])
+
+stations_merge <- merge(stations, mean_error_percent, by.x = "id", by.y = "V1")
+stations_merge <- stations_merge[stations_merge$varname == "precipitation",]
+stations_merge$V2 <- as.numeric(stations_merge$V2  )
+
+
+```
+
+```{r}
+plot( stations_merge$V2 ~ stations_merge$alt,  ylab = "error[%]", xlab = "Altitude [m]" )
+```
+
+##
+```{r}
+plot( stations_merge$V2 ~ stations_merge$lat,  ylab = "error[%]", xlab = "Latitude" )
+```
+
+##
+```{r}
+plot( stations_merge$V2 ~ stations_merge$lon,  ylab = "error[%]", xlab = "Longitude [m]" )
+```
+
+
+
