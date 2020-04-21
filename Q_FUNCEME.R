@@ -1,4 +1,4 @@
-## script to format and read the discharge files FUNCEME
+## script to format and read the discharge files from FUNCEME
 
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
@@ -24,7 +24,7 @@ for (i in 1:length(files)){
     Q_file$Q <- as.numeric(Q_file$Q)
     
     ## Get Q_file ID information from first line of file
-    dummy <- scan(files[i], what = "charachter", n = 6)
+    dummy <- scan(files[i], what = "character", n = 6)
     dummy <- dummy[c(1:3,5,6)]
     dummy <- paste(dummy, collapse = ' ' )
     Q_file$Comment <-dummy
