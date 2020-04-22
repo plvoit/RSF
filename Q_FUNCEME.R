@@ -79,8 +79,9 @@ Q_DF <- Reduce(function(x, y) merge(x, y, all=T, by="Date"), Q_files_list, accum
 
 #49705000
 Q_DF[11770:11772,"F_49705000"] <- NA
+Q_DF[11813:11814,"F_49705000"] <- NA
 
-##40040000
+#40040000
 Q_DF[11716:11719,"F_40040000"] <- NA
 
 ##45590000

@@ -109,7 +109,7 @@ DF[11813:11814,"A_49705000"] <-  NA
 
 #test <- DF[,c("date","A_49705000")]
 
-write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_ANA_corrected.txt")
+write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_ANA_corrected.txt", row.names = FALSE)
 
 
 
