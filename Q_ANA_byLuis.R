@@ -39,8 +39,8 @@ for (f in files) {
   #DF <- rbind(DF, dat)
   dat=data.frame(dat)
   DF=data.frame(DF)
-  colnames(dat)[2] = str_replace(f, ".txt", "") #rename columns with file name
-  
+  colnames(dat)[2] = paste("A",substr(f,7,nchar(f)-4),sep = "_") #rename columns with file name plus "A" for ANA
+
   if (ncol(DF) == 0) {
     DF=dat 
   } else { 
@@ -48,44 +48,43 @@ for (f in files) {
   }
 }
 
-
-#write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Fluvio_timeseries_ANA.txt")
-
-#summary(DF)
-
 ## Start with ERA5 starting date, kick out the rest
 DF <- DF[DF$date >= "1981-01-01",]
 
+write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_timeseries_ANA.txt")
 
-### Save all the stations as interactive dygraph plot
-library(dygraphs)   # for nice interactive plot
-library(xts)        # dygraphs works with xts-format for timeseries
-library(htmlwidgets) #to save widgets
+# #summary(DF)
+# 
 
-
-for(i in 2:ncol(DF)){
-  Vis <- as.xts(DF[,i],DF[,1])
-  graph <-  dygraph(Vis, main= colnames(DF)[i])
-  saveWidget(graph,paste(colnames(DF)[i],".html", sep=""))
-}
-
-
-
-
-
-### step by step to understand the tidyR syntax. 
-### this is the equivalent to the loop step by step for one file
-
-dat <- read.table(files[1], header=TRUE,sep=";",skip=16,dec=",")
-dat <- as_tibble(dat)
-dat <- filter(dat,MediaDiaria==1)
-dat <- rename(dat, location=`X..EstacaoCodigo`)
-dat <- select(dat,-ends_with("Status"),Data)  ### -ends_with("Status"):kicks out all the column names that end with "Status", I think Data could be left out and has no effect
-dat <- gather(dat,dom,value,Vazao01:Vazao31) ### the days are in each row. this stacks it, so they're in column and tagged
-dat <- mutate(dat,date=ymd(as.character(Data))+as.numeric(substr(dom,6,7))-1,value=round(value,1)) # creates date column
-dat <- select(dat,date,value)  #select just the two columns date & value
-dat <- group_by(dat,date) # these last three steps somehow order the rows by date
-dat <- slice(dat,1)
-dat <- ungroup(dat)
+# ### Save all the stations as interactive dygraph plot
+# library(dygraphs)   # for nice interactive plot
+# library(xts)        # dygraphs works with xts-format for timeseries
+# library(htmlwidgets) #to save widgets
+# 
+# 
+# for(i in 2:ncol(DF)){
+#   Vis <- as.xts(DF[,i],DF[,1])
+#   graph <-  dygraph(Vis, main= colnames(DF)[i])
+#   saveWidget(graph,paste(colnames(DF)[i],".html", sep=""))
+# }
+# 
+# 
+# 
+# 
+# 
+# ### step by step to understand the tidyR syntax. 
+# ### this is the equivalent to the loop step by step for one file
+# 
+# dat <- read.table(files[1], header=TRUE,sep=";",skip=16,dec=",")
+# dat <- as_tibble(dat)
+# dat <- filter(dat,MediaDiaria==1)
+# dat <- rename(dat, location=`X..EstacaoCodigo`)
+# dat <- select(dat,-ends_with("Status"),Data)  ### -ends_with("Status"):kicks out all the column names that end with "Status", I think Data could be left out and has no effect
+# dat <- gather(dat,dom,value,Vazao01:Vazao31) ### the days are in each row. this stacks it, so they're in column and tagged
+# dat <- mutate(dat,date=ymd(as.character(Data))+as.numeric(substr(dom,6,7))-1,value=round(value,1)) # creates date column
+# dat <- select(dat,date,value)  #select just the two columns date & value
+# dat <- group_by(dat,date) # these last three steps somehow order the rows by date
+# dat <- slice(dat,1)
+# dat <- ungroup(dat)
 
 
