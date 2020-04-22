@@ -105,7 +105,7 @@ Q_DF[10440:10445,"F_46650000"] <- NA
 Q_DF[9772:9792,"F_46675000"] <- NA
 
 ### write file corrected dataframe
-write.csv(Q_DF,file="~/Workspace/RioSaoFrancisco/Data/Q_FUNCEME_corrected.txt")
+write.csv(Q_DF,file="~/Workspace/RioSaoFrancisco/Data/Q_FUNCEME_corrected.txt", row.names = FALSE)
 
 
 # for (i in 1:length(Q_files_list)){

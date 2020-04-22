@@ -51,7 +51,7 @@ for (f in files) {
 ## Start with ERA5 starting date, kick out the rest
 DF <- DF[DF$date >= "1981-01-01",]
 
-write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_timeseries_ANA.txt")
+#write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_ANA.txt")
 
 # #summary(DF)
 # 
@@ -68,10 +68,7 @@ write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_timeseries_ANA.txt")
 #   saveWidget(graph,paste(colnames(DF)[i],".html", sep=""))
 # }
 # 
-# 
-# 
-# 
-# 
+
 # ### step by step to understand the tidyR syntax. 
 # ### this is the equivalent to the loop step by step for one file
 # 
@@ -86,5 +83,34 @@ write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_timeseries_ANA.txt")
 # dat <- group_by(dat,date) # these last three steps somehow order the rows by date
 # dat <- slice(dat,1)
 # dat <- ungroup(dat)
+
+#-------------------------------------------------------------------
+# after visual inspection of the timeseries now the manual correction
+# further description in excel file "ANA - zu korrigierende Stationen" 
+#-------------------------------------------------------------------
+
+#delete columns that contain no data after 01.01.1981
+outcols <- c("A_40300000","A_40811100","A_40817000","A_40821998","A_41200000","A_41340005","A_42145500","A_43430000","A_44760000","A_49160000")
+DF[,outcols] <- NULL
+
+#40080000
+DF[DF$date >= "2010-01-01","A_40080000"] <-  NA
+
+# the rownames need to be reset to acces the right rows
+rownames(DF) <- NULL
+
+#45840000
+DF[12905:12906,"A_45840000"] <-  NA
+ 
+#49705000
+DF[7459:7465,"A_49705000"] <-  NA
+DF[11798:11801,"A_49705000"] <-  NA
+DF[11813:11814,"A_49705000"] <-  NA
+
+#test <- DF[,c("date","A_49705000")]
+
+write.csv(DF,file="~/Workspace/RioSaoFrancisco/Data/Q_ANA_corrected.txt")
+
+
 
 
