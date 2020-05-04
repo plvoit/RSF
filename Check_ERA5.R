@@ -6,7 +6,7 @@ setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
 
 ### Pobs = Observed precip., Pera: predicted by ERA5
-Pera <- read.csv("~/Workspace/RioSaoFrancisco/Data/ERA51981_2019_precipitation_at_stations.txt", check.names = FALSE)
+Pera <- read.csv("~/Workspace/RioSaoFrancisco/Data/Processed/ERA51981_2019_precipitation_at_stations.txt", check.names = FALSE)
 Pobs <- read.csv("~/Workspace/RioSaoFrancisco/Data/xds_gerd/xds_gerd/brazil/obs/P.csv", na.strings = c("-999","-999.0","-99.9"), check.names = FALSE)
 
 

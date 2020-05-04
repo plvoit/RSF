@@ -29,8 +29,8 @@ all_files <- as.list(dir("~/Workspace/RioSaoFrancisco/Data/WatchERA5", full.name
 
 ### this works to create one big array just for the extend of brasil but will loose coordinates in the process.
 ### Basically just subsetting the wordlwide WatchERA-files
-## check extend of the ERA5 files
 
+## check extend of the ERA5 files to subset from WatchERA data
 # era5 <- nc_open("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/Data/ERA5/ERA5_Land_daily_tp_1981_SF_Basin.nc")
 # #print(era5)
 # lon <- ncvar_get(era5,"lon")
