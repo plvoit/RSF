@@ -99,8 +99,13 @@ DF[DF$date >= "2010-01-01","A_40080000"] <-  NA
 # the rownames need to be reset to acces the right rows
 rownames(DF) <- NULL
 
+#45480000
+DF[12327:12342,"A_45480000"] <-  NA
+
 #45840000
 DF[12905:12906,"A_45840000"] <-  NA
+
+
  
 #49705000
 DF[7459:7465,"A_49705000"] <-  NA

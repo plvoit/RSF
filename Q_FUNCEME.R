@@ -99,11 +99,17 @@ Q_DF[10705:10706,"F_46550000"] <-  NA
 ##46610000
 Q_DF[10353:10357,"F_46610000"] <- NA
 
+#46105000
+Q_DF[which(Q_DF[,"F_46105000"] == 0),"F_46105000"] <- NA
+
 #46650000
 Q_DF[10440:10445,"F_46650000"] <- NA
 
 #46675000
 Q_DF[9772:9792,"F_46675000"] <- NA
+
+#49705000
+Q_DF[which(Q_DF[,"F_49705000"] == 0),"F_49705000"] <- NA
 
 ### write file corrected dataframe
 write.csv(Q_DF,file="~/Workspace/RioSaoFrancisco/Data/Q_FUNCEME_corrected.txt", row.names = FALSE)
@@ -114,6 +120,6 @@ write.csv(Q_DF,file="~/Workspace/RioSaoFrancisco/Data/Q_FUNCEME_corrected.txt", 
 # }
 # 
 # 
-
+which(all_merged[,"F_49705000"] == 0)
 
 

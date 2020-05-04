@@ -107,4 +107,5 @@ write.csv(all_coord,"Data/all_coords.txt", row.names = FALSE)
 # 
 # stations[test]
 
-
+summary(all_merged[,"F_40025000"])
+plot(all_merged[,"F_40025000"]~all_merged$date)
