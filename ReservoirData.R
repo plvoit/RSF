@@ -1,3 +1,10 @@
+## this script reads the ONS reservoir data and checks the naturalized flows
+## Finally from the data of FUNCEME, ANA and ONS a dataframe with coordinates
+## with stations used for the calibration of WASA is created
+
+
+#### SUBBASIN ID has to be added for WASA, see temporary script "add_subbasinID"
+
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
