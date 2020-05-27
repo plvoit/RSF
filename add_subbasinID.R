@@ -1,3 +1,5 @@
+## this script adds an ID to the existing stations dataframe in a way WASA-SED wants it. 1 for the outlet, then upstream.
+
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 
