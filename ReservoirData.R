@@ -70,8 +70,7 @@ plot(TRES_F$F_41020002~TRES_F$Date, type = "l")
 plot(TRES_F156$F_156~TRES_F156$Date, type = "l", col = "red")
 lines(TRES_Res$`Vazão Vertida (m³/s)`~TRES_Res$`Data da Medição`, col = "blue", type ="l")
 
-#  Interactive graph displaying CRNS, Reference Soil Moisture and Precipitation, Code by Berry
-# from young Hydro script
+
 
 library(xts)
 library(dygraphs)

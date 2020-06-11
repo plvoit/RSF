@@ -23,7 +23,7 @@ all_files_short <- dir("~/Workspace/RioSaoFrancisco/Data/ERA5-RAW/Test")
 ncdf_stack <- stack(all_files)
 
 # load shapefile of subbasins for extraction
-subbasins <- readOGR("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/GIS/78subbas/78SubbasinsWGS84.shp")
+subbasins <- readOGR("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/GIS/75subbas-neu/Shape/75SubbasWGS84.shp")
 
 #Restore the workspace
 #load("workspace_NetCDF.RData")
@@ -52,17 +52,18 @@ proc.time()-ptm                #end timer for code block
 ## bind all the rows together
 DF_mean <- as.data.frame(do.call(rbind, result_list))
 
+#Save workspace to save time for future runs
+#save.image(file = "workspace_NetCDF.RData")
+
 colnames(DF_mean) <- subbasins@data$DN
 
 ## create date vector for dataframe
-start <- as.POSIXct("01.01.2001", format = c("%d.%m.%Y"), tz = "UTC")
-end <- as.POSIXct("31.12.2002", format = c("%d.%m.%Y"), tz = "UTC")
+start <- as.POSIXct("01.01.2000", format = c("%d.%m.%Y"), tz = "UTC")
+end <- as.POSIXct("31.12.2009", format = c("%d.%m.%Y"), tz = "UTC")
 time_vector <- seq(start,end, by ="day")
 DF_mean$Date <- time_vector
 
-
-#write.csv(ts, file = "ERA51981_2019_precipitation_at_stations.txt", row.names = FALSE)
-
+write.csv(DF_mean, file = "ERA52000_2009_T2m_at_75subbasins.txt", row.names = FALSE)
 
 
 #######################################################################################
