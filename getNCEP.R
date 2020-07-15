@@ -1,3 +1,11 @@
+# This script processes NCEP files. Since there are no datasets for relative humidity (yet) from KIT
+# for the first run of WASA we'll use NCEP. This data comes in a global dataset as NetCDF-Files.
+# Since the projection is different than the ones from ERA5 or WatchERA5 the shapefile of the subbasins 
+# needs to be adjusted so it fits with the NCEP raster.
+# The script extracts the mean values for the subbasins given by the shapefile.
+# NCEP is recorded every six hours. The timestamp of the NetCDF is extracted and then aggregated (mean)
+# to daily values
+
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 
@@ -7,25 +15,18 @@ library(raster)
 library(rgdal)
 library(foreach)
 library(doParallel)
+library(PaulsPack)
 
 ## create a list of all netcdf files in folder (one for each year)
 all_files <- dir("~/Workspace/RioSaoFrancisco/Data/NCEP/Test", full.names = TRUE)
 all_files_short <- dir("~/Workspace/RioSaoFrancisco/Data/NCEP/Test")
-
-## check for CRS of these NetCDF
-## check extend of the ERA5 files to subset from WatchERA data
-test <- nc_open(all_files[1])
-
-test2 <- nc_open("Data/WatchERA5 - RAW/Rainf_WFDE5_CRU+GPCC_197902_v1.0.nc")
- 
-print(test2)
 
 
 ## stack all the netcdf files into one raster stack. One raster per timestep (day)
 ncdf_stack <- stack(all_files)
 
 # load shapefile of subbasins for extraction
-subbasins <- readOGR("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/GIS/75subbas-neu/Shape/75SubbasWGS84.shp")
+subbasins <- readOGR("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/GIS/75subbas-neu/Translated_forNCEP/75subbas_translated.shp")
 
 #Restore the workspace
 #load("workspace_NetCDF.RData")
@@ -51,56 +52,52 @@ result_list <- foreach(dat=as.list(ncdf_stack)) %dopar% extract_ncdf(dat)   # th
 stopImplicitCluster()
 proc.time()-ptm                #end timer for code block
 
+#Save workspace to save time for future runs
+#save.image(file = "workspace_NCEP.RData")
+
+#Restore the workspace
+load("workspace_NCEP.RData")
+
 ## bind all the rows together
 DF_mean <- as.data.frame(do.call(rbind, result_list))
 
-#Save workspace to save time for future runs
-#save.image(file = "workspace_NetCDF.RData")
-
 colnames(DF_mean) <- subbasins@data$DN
 
-## create date vector for dataframe
-start <- as.POSIXct("01.01.2000", format = c("%d.%m.%Y"), tz = "UTC")
-end <- as.POSIXct("31.12.2009", format = c("%d.%m.%Y"), tz = "UTC")
-time_vector <- seq(start,end, by ="day")
-DF_mean$Date <- time_vector
 
-write.csv(DF_mean, file = "ERA52000_2009_T2m_at_75subbasins.txt", row.names = FALSE)
+#check how the timestamp is recorded in these NetCDF-Files
+ncfile <- nc_open(all_files[[1]])
+print(ncfile)
+##you can see: units: hours since 1800-01-01 00:00:0.0
 
 
+### find the right dates, dates in the netcdf files are given by hours since 01.01.1800
+time_vectors <-  list()
+for (i in 1:length(all_files)){
+  ncfile <- nc_open(all_files[[i]])
+  time_string <- ncvar_get(ncfile, "time")
+  time_string <- as.POSIXct(time_string*3600,origin = "1800-01-01" ) # conversion found on stackoverflow, seems to work
+  time_vectors[[i]] <- time_string
+}
+
+# Put all the vectors into one
+time_joined <- Reduce(c,time_vectors)
+
+# attach timevector to dataframe
+DF_mean$Date <- time_joined
+
+## NCEP is 6-hourly needs to be aggregated to daily
+
+DF_mean_daily <- aggregate_by_time(DF_mean,c(1:75),"1 day",mean)
+
+#rename date column
+colnames(DF_mean_daily)[1] <-  "Date"
+
+# format the date column
+DF_mean_daily$Date <- as.POSIXct(DF_mean_daily$Date)
+DF_mean_daily$Date <- as.POSIXct(format(DF_mean_daily$Date, "%Y-%m-%d"))
+
+
+write.csv(DF_mean_daily, file = "NCEP2000_2009_rHum_at_75subbasins.txt", row.names = FALSE)
 
 
 
-
-rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco")
-
-library(ncdf4)
-#library(RNetCDF)
-library(raster)
-#library(ncdf.tools)
-library(PaulsPack)
-
-## create a list of all netcdf files in folder (one for each year)
-all_files <- as.list(dir("~/Workspace/RioSaoFrancisco/Data/NCEP/relative_humidity", full.names = TRUE))
-
-
-
-install_github("jmigueldelgado/hymet-datasets")
-## extent of RSF basin
-##xmin -49, ymin -22.5, xmax -35, ymax -2.5
-#Das sind die offiziellen SaWaM-Randkoordinate
-coor <- data.frame(lon=13.40,lat=52.52)
-var <- c('temperature','relative humidity')
-years <- c('2000','2001')
-
-request <- def_request(coor,var,years)
-
-get_nc(request)
-
-nc2rds(request)
-install_github("plvoit/PaulsPack")
-library(PaulsPack)
-
-#https://dominicroye.github.io/en/2018/access-to-climate-reanalysis-data-from-r/
-install.packages("RNCEP")

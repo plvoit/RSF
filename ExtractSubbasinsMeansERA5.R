@@ -57,7 +57,7 @@ DF_mean <- as.data.frame(do.call(rbind, result_list))
 
 colnames(DF_mean) <- subbasins@data$DN
 
-## create date vector for dataframe
+## create date vector for dataframe ###!!!! this could be done more elegant as done in script getNCEP
 start <- as.POSIXct("01.01.2000", format = c("%d.%m.%Y"), tz = "UTC")
 end <- as.POSIXct("31.12.2009", format = c("%d.%m.%Y"), tz = "UTC")
 time_vector <- seq(start,end, by ="day")
@@ -98,7 +98,7 @@ DF_mean <- as.data.frame(do.call(rbind, result_list))
 
 colnames(DF_mean) <- stations_gerd@data$id
 
-## create date vector for dataframe
+## create date vector for dataframe ###!!!! this could be done more elegant as done in script getNCEP 
 start <- as.POSIXct("01.01.2001", format = c("%d.%m.%Y"), tz = "UTC")
 end <- as.POSIXct("31.12.2002", format = c("%d.%m.%Y"), tz = "UTC")
 time_vector <- seq(start,end, by ="day")
