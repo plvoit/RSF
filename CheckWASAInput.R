@@ -1,5 +1,6 @@
 # This script formats the timeseries outputs from getNCEP and ExtractSubbasinMeans and formats them in the right way
-# for WASA input
+# for WASA input:
+# rain, humidity, radiation, temperature
 
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
