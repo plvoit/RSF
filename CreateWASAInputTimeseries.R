@@ -7,10 +7,14 @@ setwd("~/Workspace/RioSaoFrancisco")
 
 Precipitation <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/ERA52000_2009_precipitation_at_75subbasins.txt", check.names = FALSE)
 Precipitation[,1:75] <- round(Precipitation[,1:75],1)
+
 SSRD <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/ERA52000_2009_SSRD_at_75subbasins.txt", check.names = FALSE)
 SSRD[,1:75] <- round(SSRD[,1:75],1)
+#transform Kelvin to Celsius
 T2m <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/ERA52000_2009_T2m_at_75subbasins.txt", check.names = FALSE)
+T2m[,1:75] <- T2m[,1:75] - 273.15
 T2m[,1:75] <- round(T2m[,1:75],1)
+
 rHum <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/NCEP2000_2009_rHum_at_75subbasins.txt", check.names = FALSE)
 rHum[,2:76] <- round(rHum[,2:76],0)
 

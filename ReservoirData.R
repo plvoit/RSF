@@ -10,8 +10,8 @@ setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
 library(readxl)
 
-files <-  dir("Data/ANA reservoir Data/Workdir", full.names =  TRUE)
-files_short <-  dir("Data/ANA reservoir Data/Workdir")
+files <-  dir("Data/ONS reservoir Data/Workdir", full.names =  TRUE)
+files_short <-  dir("Data/ONS reservoir Data/Workdir")
 
 ## read all files and format. There seem to be two different formats among the original files
 Q_files_list <- list()
@@ -114,7 +114,7 @@ file_list <- list()
 
 for ( i in 1:length(files)){
   dummy <- read.csv2(files[i])
-  dummy$Data.da.Medição <- as.POSIXct(dummy$Data.da.Medição, format = c("%d.%m.%Y"))
+#  dummy$Data.da.Medição <- as.POSIXct(dummy$Data.da.Medição, format = c("%d.%m.%Y"))
   file_list[[i]] <- dummy
 }
 
@@ -144,16 +144,16 @@ for ( i in 1:length(files)){
 #   saveWidget(graph,paste(substr(files_short[i],11,nchar(files_short[i])-4),".html", sep=""))
 # }
 
-
-for (i in 1:length(file_list)){
-  dummy <-  file_list[[i]]
-  plot(dummy[[4]] ~dummy$Data.da.Medição, type ="l", ylab = "m^3/s", 
-       main = substr(files_short[i],11,nchar(files_short[i])-4), xlab = "Year", ylim= c(0,max(dummy[,c(4,5,6,7)], na.rm = TRUE)))
-  lines(dummy[[5]] ~ dummy$Data.da.Medição, type ="l", col = "red")
-  lines(dummy[[6]] ~ dummy$Data.da.Medição, type ="l", col = "blue")
-  lines(dummy[[7]] ~ dummy$Data.da.Medição, type ="l", col = "green")
-  legend("topright", legend = c("Afluência","Defluência","Vazao Vertida","Vazao Turbinada"), col = c("black","red","blue","green"), lty=1, cex=0.8)
-}
+# 
+# for (i in 1:length(file_list)){
+#   dummy <-  file_list[[i]]
+#   plot(dummy[[4]] ~dummy$Data.da.Medição, type ="l", ylab = "m^3/s", 
+#        main = substr(files_short[i],11,nchar(files_short[i])-4), xlab = "Year", ylim= c(0,max(dummy[,c(4,5,6,7)], na.rm = TRUE)))
+#   lines(dummy[[5]] ~ dummy$Data.da.Medição, type ="l", col = "red")
+#   lines(dummy[[6]] ~ dummy$Data.da.Medição, type ="l", col = "blue")
+#   lines(dummy[[7]] ~ dummy$Data.da.Medição, type ="l", col = "green")
+#   legend("topright", legend = c("Afluência","Defluência","Vazao Vertida","Vazao Turbinada"), col = c("black","red","blue","green"), lty=1, cex=0.8)
+# }
 
 
 #plot Vazao natural
