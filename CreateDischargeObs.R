@@ -75,12 +75,15 @@ Subbas_ID <- c("1","2","3","4","96","45", "58","90","16","15","78","73","13","9"
 length(Gauges[Gauges %in% colnames(stations_model)])
 
 # create dataframe giving each Gauge the corresponding subbasin ID
-ID_gauge_DF <- data.frame(Gauges,Subbas_ID)
+SubbasID_GaugeNumber <- data.frame(Gauges,Subbas_ID)
+SubbasID_GaugeNumber$Gauges <- as.character(SubbasID_GaugeNumber$Gauges)
+SubbasID_GaugeNumber$Subbas_ID <- as.character(SubbasID_GaugeNumber$Subbas_ID)
 
-# there must be a better approach to match the new names (with the function match?), for now it's done like this. Reordering the dataframe
-# and then changing the colnames to subbas_ID
-stations_model <- stations_model[,c("DateTime",Gauges)]
-names(stations_model)[2:18] <- Subbas_ID
+# renaming the columns with subbasin ID rather than gauge number, for this the function match() works well
+for (i in 2:18){
+  names(stations_model)[i] <- SubbasID_GaugeNumber[match(names(stations_model[i]), SubbasID_GaugeNumber$Gauges),"Subbas_ID"]
+  
+}
 
 # the dataframe needs to be in a certain format to run the test on WASA
 
