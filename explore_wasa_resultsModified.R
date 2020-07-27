@@ -381,7 +381,8 @@ if (save_plot) windows()
                    )
   plotdata = plotdata[nrow(plotdata):1,] #reverse order
 
-  barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), main=subbas_id,
+  barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)),
+          main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
           ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[mm]")
   print(paste0("Volume error [mm]: ",diff(apply(plotdata,2,sum))))
 
@@ -397,15 +398,18 @@ if (save_plot) windows()
   #                 total=c(totals["daily_water_subbasin"],0,0)
     )
   
-  barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), ylab="[mm]", main=paste0("runoff subbasin ",subbas_id),
+  barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), ylab="[mm]",
+          main=paste0("runoff subbasin ",main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]),
           ylim=c(0,sum(plotdata)*1.4), args.legend=list(x="top"))
 points(1,totals["water_subbasin"], pch="*", cex=2)
 
-  if (save_plot) savePlot(filename=subbas_id, type="png")
+  if (save_plot) savePlot(filename = paste("waterBalance_",SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],sep = ""), type="png")
   
   }
 
-##################
+####################################
+# This seems to be just for sediment
+############
 if (save_plot) windows()
 #plot modelled sediment balance 
 for (subbas_id in 31:31)
