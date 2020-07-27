@@ -59,8 +59,8 @@ stations_model <- merge(dummy,Q_FUNCEME, by = "Date", all.x = TRUE, all.y = TRUE
 # fix the weird brazilian character
 names(stations_model)[3] <- "TRES MARIAS"
 
-# fill gaps in date column
-stations_model <- fillNA_datesequence(stations_model,"1 day")
+# fill gaps in date column !!!! Somehow this function creates a weird effect in some timeseries, causing bigger holes for no reason
+#stations_model <- fillNA_datesequence(stations_model,"1 day")
 
 ### RENAME RESERVOIR COLUMNS
 
@@ -87,13 +87,13 @@ for (i in 2:18){
 
 # the dataframe needs to be in a certain format to run the test on WASA
 
-stations_model$YYYY <- format(stations_model$DateTime, "%Y")
-stations_model$MM <- format(stations_model$DateTime, "%m")
-stations_model$DD <- format(stations_model$DateTime, "%d")
+stations_model$YYYY <- format(stations_model$Date, "%Y")
+stations_model$MM <- format(stations_model$Date, "%m")
+stations_model$DD <- format(stations_model$Date, "%d")
 stations_model$HH <- 0
 
 # take the dates from 2000-2009
-stations_model <- stations_model[stations_model$DateTime >= "2000-01-01" & stations_model$DateTime <= "2009-12-31", ]
+stations_model <- stations_model[stations_model$Date >= "2000-01-01" & stations_model$Date <= "2009-12-31", ]
 
 #reorder and kick out DateTime column
 stations_model <- stations_model[,c(19,20,21,22,2:18)]
@@ -104,3 +104,8 @@ write.table(stations_model,file ="discharge_obs_24.txt", sep = "\t", row.names =
 
 #the necessary header will be attached manually in the text editor
 
+
+#check the results
+for ( i in 5:21){
+  plot(stations_model[,i], type = "l", main = colnames(stations_model)[i])
+}
