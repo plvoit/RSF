@@ -2,13 +2,11 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 
-wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/0","/Input/Time_series",sep="")
-wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/0","/Output/",sep="")
+wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Input/Time_series",sep="")
+wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
-run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-
-# not needed
-thread_dir="2-2/"    #specifiy the directory (e.g., example1, tutorial, ...)
+run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
+thread_dir="1.2/"   #specifiy the directory (e.g., example1, tutorial, ...)
  
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
@@ -16,7 +14,6 @@ thread_dir="2-2/"    #specifiy the directory (e.g., example1, tutorial, ...)
 save_plot=TRUE
 
 ############
- # library(playwith)
   setwd("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/wasa_visualisation") #directory/location of R-files for visualisation
   source(paste0("read_wasa_func.R"))        #in this location, access "read_wasa_func.R"
 
@@ -34,11 +31,10 @@ attr_table[1,1] <- "F_49705000"
 SubbasID_GaugeNumber <- merge(SubbasID_GaugeNumber, attr_table, by.x = "Gauges", by.y = "ID")
 SubbasID_GaugeNumber <- SubbasID_GaugeNumber[,c(1,2,6,7)]
 
-
 ################################################
 
 #read WASA runtime parameters, specify path of parameter.out, should be in the Output directory 
-ctrl_params = parse_wasa_ctrl_params(wasa_param_file=paste0(run_dir, "0/Output/parameter.out"))
+ctrl_params = parse_wasa_ctrl_params(wasa_param_file=paste0(run_dir, "/0/",thread_dir,"Output/parameter.out"))
   
 #execute this block if you get Error in file(file, "r") : cannot open the connection"
      if (!grepl(ctrl_params$input_dir, pattern="^[a-zA-Z]:|^[/\\]")) #if this is a relative path, prepend working dir
@@ -47,8 +43,8 @@ ctrl_params = parse_wasa_ctrl_params(wasa_param_file=paste0(run_dir, "0/Output/p
        ctrl_params$output_dir = paste0(run_dir,ctrl_params$output_dir)
 
 #Manual fix of wrong relative paths
-ctrl_params$input_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/0/Input/"
-ctrl_params$output_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/0/Output/"
+ctrl_params$input_dir=paste(run_dir, "/0/", thread_dir, "Input/", sep = "")
+ctrl_params$output_dir=paste(run_dir, "/0/", thread_dir, "Output/", sep = "")
   
 if (T) #compute runoff coefficients -> only for time period with measured data in discharge_obs_24.txt !! 
 {  
@@ -146,13 +142,22 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
     #load the calibrate package
     library(calibrate)
   
+  windows()  
   # if plot doesn't work, clear plot history (broomstick symbol in Plot window)
   plot(sum_runoff_mod_RiverFlow, sum_runoff_obs, ylab="Total sum of runoff, observed [mm]", xlab="Total sum of runoff, modelled RiverFlow [mm]")
   abline(a=0, b=1)
   plot(sum_runoff_mod_DailyWaterSubbas, sum_runoff_obs, ylab="Total sum of runoff, observed [mm]", xlab="Total sum of runoff, modelled DailyWaterSubbas [mm]")
   abline(a=0, b=1)
   #textxy(sum_runoff_mod, sum_runoff_obs, sum_runoff_obs) #x-value, y-value, Label - funktioniert nur, wenn Daten Label/ID haben
-
+  
+  ##check if thread_dir exists to save plots, otherwise create it
+  ## create folder to save the visualisation
+  if ( dir.exists(thread_dir) == FALSE){
+    dir.create(thread_dir)
+  }
+  
+  savePlot(paste(thread_dir,"Sum_runoff","_",substring(thread_dir,1,nchar(thread_dir)-1),".png", sep = ""), "png")
+  
   # Calculate runoff coefficients
   rc_obs = sum_runoff_obs / sum_rainfall_obs
   rc_mod_RiverFlow = sum_runoff_mod_RiverFlow / sum_rainfall_obs
@@ -175,7 +180,8 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
   # Display sorted runoff coefficients
   rc_data[order(rc_data$Index),]
   
-  
+####################### 
+######WATER BALANCE#####  
 ########################
 # change from original. Create loop visualize and save all the subbasins where observations are used
   for ( i in SubbasID_GaugeNumber$Subbas_ID){
@@ -236,7 +242,13 @@ summary(res$result_array[,c("River_Flow","daily_water_subbasin")])
   plot_rainfall_runoff(x, xlim = NULL, ylim = NULL, x_col=1, subplot_assignment=c(0,2,1,2,2,2), s_colors = c("blue","cyan","red","magenta","black"), xlab="", ylab="",
                       main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"])
 
-  savePlot(SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"], "png")
+  ## create folder to save the visualisation
+  if ( dir.exists(thread_dir) == FALSE){
+    dir.create(thread_dir)
+  }
+  
+  savePlot(paste(thread_dir,SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
+                 "_",substring(thread_dir,1,nchar(thread_dir)-1), ".png", sep = ""), "png")
 }
 } # end of for loop
 #stop()
@@ -244,11 +256,13 @@ summary(res$result_array[,c("River_Flow","daily_water_subbasin")])
   ########
   
 ######## Proceed here  
-  
+ Volume_error_DF <- data.frame( "ID" = c(), "Volume Error[mm]" = c(), "km.source" = c(), "Index" = c())
   
 if (save_plot) windows()
 #plot water balance and runoff components
-  for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)  ##added loop already, check if it works
+  # set counter for indexing Volume Error dataframe
+  counter = 1
+  for (subbas_id in SubbasID_GaugeNumber$Subbas_ID) 
   {  
   res = read_wasa_results(ctrl_params,components_list=c(
     "gw_loss",                                                      
@@ -385,6 +399,11 @@ if (save_plot) windows()
           main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
           ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[mm]")
   print(paste0("Volume error [mm]: ",diff(apply(plotdata,2,sum))))
+  
+  Volume_error_DF[counter,"ID"] <- subbas_id
+  Volume_error_DF[counter,"Volume Error [mm]"] <- diff(apply(plotdata,2,sum))
+  Volume_error_DF[counter,"km.source"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
+  Volume_error_DF[counter,"Index"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"Index"]
 
   #plot runoff components
   plotdata=totals[c("gw_discharge", "subsurface_runoff", "total_overlandflow")]
@@ -403,227 +422,235 @@ if (save_plot) windows()
           ylim=c(0,sum(plotdata)*1.4), args.legend=list(x="top"))
 points(1,totals["water_subbasin"], pch="*", cex=2)
 
-  if (save_plot) savePlot(filename = paste("waterBalance_",SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],sep = ""), type="png")
-  
+
+## create folder to save the visualisation
+if ( dir.exists(thread_dir) == FALSE){
+  dir.create(thread_dir)
+}
+
+  if (save_plot) savePlot(filename = paste(thread_dir,"waterBalance_",
+                                           SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
+                                           ,"_",substring(thread_dir,1,nchar(thread_dir)-1),".png",sep = ""), type="png")
+ counter = counter + 1
   }
 
 ####################################
 # This seems to be just for sediment
-############
-if (save_plot) windows()
-#plot modelled sediment balance 
-for (subbas_id in 31:31)
-  #subbas_id=31
-{  
-  res = read_wasa_results(ctrl_params,components_list=c(
-    #     #"deep_gw_recharge",
-    #"deep_gw_discharge",
-    #"gw_discharge",
-    #"gw_loss",                                                      
-    
-    #     #"daily_qhorton",
-    #     "daily_subsurface_runoff",
-    #     "daily_total_overlandflow",
-    #     "daily_actetranspiration",
-    #     #"River_Flow",
-    #     #"daily_potetranspiration",
-    #     "daily_water_subbasin"
-    #     
-    #"subsurface_runoff",
-    #"total_overlandflow",
-    #"actetranspiration",
-    #"water_subbasin"
-    "River_Sediment_total",
-    "daily_sediment_production"
-    
-  ), subbas_id=subbas_id) #read WASA simulation results
-  dt = attr(res$result_array,"dt")
-  
-  obs=NULL
-  #obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
-  
-  
-#   #convert to same units: t/ [dt]
-#   #area = attr(res[[2]], "subbas_area") #subbasin area[km²]
+# ############
+# if (save_plot) windows()
+# #plot modelled sediment balance 
+# for (subbas_id in 31:31)
+#   #subbas_id=31
+# {  
+#   res = read_wasa_results(ctrl_params,components_list=c(
+#     #     #"deep_gw_recharge",
+#     #"deep_gw_discharge",
+#     #"gw_discharge",
+#     #"gw_loss",                                                      
+#     
+#     #     #"daily_qhorton",
+#     #     "daily_subsurface_runoff",
+#     #     "daily_total_overlandflow",
+#     #     "daily_actetranspiration",
+#     #     #"River_Flow",
+#     #     #"daily_potetranspiration",
+#     #     "daily_water_subbasin"
+#     #     
+#     #"subsurface_runoff",
+#     #"total_overlandflow",
+#     #"actetranspiration",
+#     #"water_subbasin"
+#     "River_Sediment_total",
+#     "daily_sediment_production"
+#     
+#   ), subbas_id=subbas_id) #read WASA simulation results
+#   dt = attr(res$result_array,"dt")
 #   
+#   obs=NULL
+#   #obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
+#   
+#   
+# #   #convert to same units: t/ [dt]
+# #   #area = attr(res[[2]], "subbas_area") #subbasin area[km²]
+# #   
+# #   cols_in_m3 = attr(res$result_array,"units") == "m3" | attr(res$result_array,"units") == "m3/d"
+# #   res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / (area*1e6) * 1e3
+# #   
+# #   cols_in_m3s = attr(res$result_array,"units") == "m3/s" 
+# #   res$result_array[, cols_in_m3s] = res$result_array[, cols_in_m3s]* (dt*3600) / (area*1e6) * 1e3
+# #   
+#   mod_df=data.frame(datenum=res$datevec, res$result_array) #convert to dataframe
+#   #obs_mod = merge(mod_df, obs) #merge observations and model results
+#   obs_mod = mod_df
+#   
+#   totals=apply(obs_mod[,-1], 2, sum) #sum up total amounts
+#   names(totals) = c("sediment yield", "gross erosion")
+#   
+#   #sediment balance
+#   #riverbed storage
+#   tt=read.table(paste0(ctrl_params$output_dir, "sediment_storage.stat"), header=TRUE, skip=1, sep="\t")
+#   tt=tt[tt$Subbasin %in% subbas_id,]
+#   t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
+#   sed_storage=data.frame(subbas_id=t2$subbas_id, end=t2$x)
+#   
+#   tt=read.table(paste0(ctrl_params$output_dir, "sediment_storage.stat_start"), header=TRUE, skip=1, sep="\t")
+#   tt=tt[tt$Subbasin %in% subbas_id,]
+#   t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
+#   sed_storage$start= t2$x
+#   sed_storage = sed_storage[sed_storage$subbas_id %in% subbas_id,]
+#   sed_storage$balance = sed_storage$end - sed_storage$start
+#   
+#   #storage in suspension
+#   tt=read.table(paste0(ctrl_params$output_dir, "susp_sediment_storage.stat"), header=TRUE, skip=1, sep="\t")
+#   tt=tt[tt$Subbasin %in% subbas_id,]
+#   t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
+#   susp_sed_storage=data.frame(subbas_id=t2$subbas_id, end=t2$x)
+#   
+#   tt=read.table(paste0(ctrl_params$output_dir, "susp_sediment_storage.stat_start"), header=TRUE, skip=1, sep="\t")
+#   tt=tt[tt$Subbasin %in% subbas_id,]
+#   t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
+#   susp_sed_storage$start= t2$x
+#   susp_sed_storage = susp_sed_storage[susp_sed_storage$subbas_id %in% subbas_id,]
+#   susp_sed_storage$balance = susp_sed_storage$end - susp_sed_storage$start
+#   
+#  
+#   
+#   
+#   #par(mfcol=c(1,2))
+#   #plot balance
+#   plotdata=cbind(input=c(totals["gross erosion"]),
+#                  output=c(yield=totals["sediment yield"])
+#   )
+#   row.names(plotdata)=c("erosion/yield")
+#   balances = c(sed_storage=sed_storage$balance, susp_sed_storage=susp_sed_storage$balance)
+#   storages=data.frame(depleted = pmax(0,-balances), filled = pmax(0,balances), row.names=names(balances))
+#   
+#   plotdata = rbind(plotdata, 
+#                    as.matrix(storages)
+#   )
+#   plotdata = plotdata[nrow(plotdata):1,] #reverse order
+#   
+#   barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), main=subbas_id,
+#           ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[t]")
+#   print(paste0("Mass error [t]: ",diff(apply(plotdata,2,sum))))
+#   
+#  
+#   
+#   if (save_plot) savePlot(filename=subbas_id, type="png")
+#   
+# }
+# 
+# 
+# if (save_plot) windows()
+# if (FALSE) #compare modelled and measured yields
+# {  
+#   subbas_id=1:6  #select subbasins to read
+# 
+#   components_list="River_Sediment_total"
+#   xx = read_wasa_results(ctrl_params, components_list=components_list,
+#    subbas_id=subbas_id)  #the strange structure is due to compatibility wiht RHydro package
+# 
+#   d.wasa.out <- t(xx[[2]]) #modelled components
+#   dim(d.wasa.out)=c(1,dim(d.wasa.out))    #reshape array to match style of WASIM-package
+#   dimnames(d.wasa.out)[2]= dimnames(xx[[2]])[2] #keep names
+#   data.types=data.frame(X1.29=nchar(components_list),beschreibung_en=components_list, prefix=components_list, has_stat=is.null(components_list))  #match style of WASIM-package
+#   
+#   
+#   datevec= xx[[1]]       #date information
+#   
+#   d.meas.all = read_observations(subbas_id=subbas_id, datevec=datevec, target_component=c("River_Sediment_total"), wasa_input_dir=ctrl_params$input_dir)
+# 
+#   if (all(is.na(d.meas.all[,-1]))) stop("no observation data in timespan. Check observed sediment time series") 
+#   if (ncol(d.meas.all) < length(subbas_id)+1) stop("Couldn't find all subbasin data (found ", paste(names(d.meas.all)[-1], collapse=", "), "). Check discharge_obs_*.txt") 
+#   
+#   start_date=min(datevec)    #get start and end of modelled time series
+#   end_date=max(datevec)
+# 
+#   #trim observed and modelled data to desired time period
+#   d.meas.all=d.meas.all[d.meas.all$datenum>=start_date & d.meas.all$datenum<=end_date,]
+#   
+#   d.wasa.out = d.wasa.out[,,datevec>=start_date & datevec<=end_date, drop=FALSE]
+#   if (length(d.wasa.out)==0 || length(d.wasa.out[1,1,]) == 0) stop("compute_goodness_measures: modelled data doesn't cover required timespan")
+#   
+#   datevec = datevec[datevec>=start_date & datevec<=end_date]
+# 
+#   array_offset_sed=0  
+#   
+#   collected=data.frame()
+#   for (subbas_counter in 1:length(subbas_id))
+#   {
+#       #    browser()
+#       
+#       #assign sediment fluxes
+#       q_sed_mod = d.wasa.out[1, array_offset_sed + subbas_counter, ]
+#       q_sed_meas = d.meas.all[, paste0("monthly_yield_sub", subbas_id[subbas_counter])]    
+#       
+#       if (any(grepl(pattern="monthly_yield", x=names(d.meas.all)))) #if observations are monthly sediment yield
+#       {
+#         compiled=data.frame(datevec=datevec, q_sed_mod = q_sed_mod, q_sed_meas=q_sed_meas)
+#         no_nas=range(which(!is.na(q_sed_mod+q_sed_meas))) #find first and last no-na record
+#         
+#         compiled$month_code = (as.POSIXlt(compiled$datevec)[["year"]]-100)*100 + (as.POSIXlt(compiled$datevec)[["mon"]]+1)
+#         compiled=compiled[compiled$month_code >= compiled$month_code[no_nas[1]] &
+#                             compiled$month_code <= compiled$month_code[no_nas[2]], ] 
+#         
+#         tt=aggregate(x=compiled[,-c(1,4)], by=list(compiled$month_code), FUN=sum, na.rm=TRUE)[,-1]
+#         q_sed_mod=tt$q_sed_mod
+#         q_sed_meas=tt$q_sed_meas
+#       }  
+#       collected=rbind(collected, data.frame(subbas=subbas_id[subbas_counter], obs=q_sed_meas, mod=q_sed_mod))
+#   }
+#   palette(rainbow(6))
+#   plot(collected$mod, collected$obs, col=collected$subbas, pch = 20) 
+#   legend(x="topleft", legend=attr(d.meas.all, "subbasin_names")[-1], col=unique(collected$subbas), pch = 20)
+#   abline(a=0, b=1)
+#   
+#   totals=aggregate(collected[,-1], by=list(subbas=collected$subbas), FUN = sum)
+#   totals$names=attr(d.meas.all, "subbasin_names")[-1]
+#   
+#   plot(totals$mod, totals$obs, col=1:nrow(totals), pch = 20) 
+#   legend(x="topleft", legend=attr(d.meas.all, "subbasin_names")[-1], col=1:nrow(totals), pch = 20)
+#   abline(a=0, b=1)
+#   print(totals)
+# 
+#   write.table(collected, file=paste0(run_dir,"/sed_yield_obs_mod.txt"), sep="\t", row.names=FALSE, quote=FALSE)            
+#   if (save_plot) savePlot(filename=paste0(run_dir,"/sed_yield"), type="png")
+# }
+# 
+# 
+# subbas_id=1
+# if (TRUE) # single subbas, plot time series sediment
+# {  
+#   res = read_wasa_results(ctrl_params,components_list=c(
+#     "River_Sediment_total",
+#     "daily_sediment_production",
+#     "daily_total_overlandflow",
+#     
+#     "River_Flow",
+#         "daily_water_subbasin"
+#     #"water_subbasin"
+#   ), subbas_id=subbas_id) #read WASA simulation results
+#   dt = attr(res$result_array,"dt")
+#   obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
+#   
+#   source("plot_rainfall_runoff.R") #include plotting routine
+#   
+#   
+#   #convert to same units: m?/s
 #   cols_in_m3 = attr(res$result_array,"units") == "m3" | attr(res$result_array,"units") == "m3/d"
-#   res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / (area*1e6) * 1e3
+#   res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / dt / 3600
 #   
-#   cols_in_m3s = attr(res$result_array,"units") == "m3/s" 
-#   res$result_array[, cols_in_m3s] = res$result_array[, cols_in_m3s]* (dt*3600) / (area*1e6) * 1e3
+#   area = attr(res[[2]], "subbas_area")  
+#   cols_in_mm = attr(res$result_array,"units") == "mm" | attr(res$result_array,"units") == "mm/d"
+#   res$result_array[, cols_in_mm] = res$result_array[, cols_in_mm] /1e3 * area * 1e6 / (24*3600)
 #   
-  mod_df=data.frame(datenum=res$datevec, res$result_array) #convert to dataframe
-  #obs_mod = merge(mod_df, obs) #merge observations and model results
-  obs_mod = mod_df
-  
-  totals=apply(obs_mod[,-1], 2, sum) #sum up total amounts
-  names(totals) = c("sediment yield", "gross erosion")
-  
-  #sediment balance
-  #riverbed storage
-  tt=read.table(paste0(ctrl_params$output_dir, "sediment_storage.stat"), header=TRUE, skip=1, sep="\t")
-  tt=tt[tt$Subbasin %in% subbas_id,]
-  t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
-  sed_storage=data.frame(subbas_id=t2$subbas_id, end=t2$x)
-  
-  tt=read.table(paste0(ctrl_params$output_dir, "sediment_storage.stat_start"), header=TRUE, skip=1, sep="\t")
-  tt=tt[tt$Subbasin %in% subbas_id,]
-  t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
-  sed_storage$start= t2$x
-  sed_storage = sed_storage[sed_storage$subbas_id %in% subbas_id,]
-  sed_storage$balance = sed_storage$end - sed_storage$start
-  
-  #storage in suspension
-  tt=read.table(paste0(ctrl_params$output_dir, "susp_sediment_storage.stat"), header=TRUE, skip=1, sep="\t")
-  tt=tt[tt$Subbasin %in% subbas_id,]
-  t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
-  susp_sed_storage=data.frame(subbas_id=t2$subbas_id, end=t2$x)
-  
-  tt=read.table(paste0(ctrl_params$output_dir, "susp_sediment_storage.stat_start"), header=TRUE, skip=1, sep="\t")
-  tt=tt[tt$Subbasin %in% subbas_id,]
-  t2 = aggregate(tt[,3], by=list(subbas_id=tt$Subbasin), FUN=sum)
-  susp_sed_storage$start= t2$x
-  susp_sed_storage = susp_sed_storage[susp_sed_storage$subbas_id %in% subbas_id,]
-  susp_sed_storage$balance = susp_sed_storage$end - susp_sed_storage$start
-  
- 
-  
-  
-  #par(mfcol=c(1,2))
-  #plot balance
-  plotdata=cbind(input=c(totals["gross erosion"]),
-                 output=c(yield=totals["sediment yield"])
-  )
-  row.names(plotdata)=c("erosion/yield")
-  balances = c(sed_storage=sed_storage$balance, susp_sed_storage=susp_sed_storage$balance)
-  storages=data.frame(depleted = pmax(0,-balances), filled = pmax(0,balances), row.names=names(balances))
-  
-  plotdata = rbind(plotdata, 
-                   as.matrix(storages)
-  )
-  plotdata = plotdata[nrow(plotdata):1,] #reverse order
-  
-  barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), main=subbas_id,
-          ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[t]")
-  print(paste0("Mass error [t]: ",diff(apply(plotdata,2,sum))))
-  
- 
-  
-  if (save_plot) savePlot(filename=subbas_id, type="png")
-  
-}
-
-
-if (save_plot) windows()
-if (FALSE) #compare modelled and measured yields
-{  
-  subbas_id=1:6  #select subbasins to read
-
-  components_list="River_Sediment_total"
-  xx = read_wasa_results(ctrl_params, components_list=components_list,
-   subbas_id=subbas_id)  #the strange structure is due to compatibility wiht RHydro package
-
-  d.wasa.out <- t(xx[[2]]) #modelled components
-  dim(d.wasa.out)=c(1,dim(d.wasa.out))    #reshape array to match style of WASIM-package
-  dimnames(d.wasa.out)[2]= dimnames(xx[[2]])[2] #keep names
-  data.types=data.frame(X1.29=nchar(components_list),beschreibung_en=components_list, prefix=components_list, has_stat=is.null(components_list))  #match style of WASIM-package
-  
-  
-  datevec= xx[[1]]       #date information
-  
-  d.meas.all = read_observations(subbas_id=subbas_id, datevec=datevec, target_component=c("River_Sediment_total"), wasa_input_dir=ctrl_params$input_dir)
-
-  if (all(is.na(d.meas.all[,-1]))) stop("no observation data in timespan. Check observed sediment time series") 
-  if (ncol(d.meas.all) < length(subbas_id)+1) stop("Couldn't find all subbasin data (found ", paste(names(d.meas.all)[-1], collapse=", "), "). Check discharge_obs_*.txt") 
-  
-  start_date=min(datevec)    #get start and end of modelled time series
-  end_date=max(datevec)
-
-  #trim observed and modelled data to desired time period
-  d.meas.all=d.meas.all[d.meas.all$datenum>=start_date & d.meas.all$datenum<=end_date,]
-  
-  d.wasa.out = d.wasa.out[,,datevec>=start_date & datevec<=end_date, drop=FALSE]
-  if (length(d.wasa.out)==0 || length(d.wasa.out[1,1,]) == 0) stop("compute_goodness_measures: modelled data doesn't cover required timespan")
-  
-  datevec = datevec[datevec>=start_date & datevec<=end_date]
-
-  array_offset_sed=0  
-  
-  collected=data.frame()
-  for (subbas_counter in 1:length(subbas_id))
-  {
-      #    browser()
-      
-      #assign sediment fluxes
-      q_sed_mod = d.wasa.out[1, array_offset_sed + subbas_counter, ]
-      q_sed_meas = d.meas.all[, paste0("monthly_yield_sub", subbas_id[subbas_counter])]    
-      
-      if (any(grepl(pattern="monthly_yield", x=names(d.meas.all)))) #if observations are monthly sediment yield
-      {
-        compiled=data.frame(datevec=datevec, q_sed_mod = q_sed_mod, q_sed_meas=q_sed_meas)
-        no_nas=range(which(!is.na(q_sed_mod+q_sed_meas))) #find first and last no-na record
-        
-        compiled$month_code = (as.POSIXlt(compiled$datevec)[["year"]]-100)*100 + (as.POSIXlt(compiled$datevec)[["mon"]]+1)
-        compiled=compiled[compiled$month_code >= compiled$month_code[no_nas[1]] &
-                            compiled$month_code <= compiled$month_code[no_nas[2]], ] 
-        
-        tt=aggregate(x=compiled[,-c(1,4)], by=list(compiled$month_code), FUN=sum, na.rm=TRUE)[,-1]
-        q_sed_mod=tt$q_sed_mod
-        q_sed_meas=tt$q_sed_meas
-      }  
-      collected=rbind(collected, data.frame(subbas=subbas_id[subbas_counter], obs=q_sed_meas, mod=q_sed_mod))
-  }
-  palette(rainbow(6))
-  plot(collected$mod, collected$obs, col=collected$subbas, pch = 20) 
-  legend(x="topleft", legend=attr(d.meas.all, "subbasin_names")[-1], col=unique(collected$subbas), pch = 20)
-  abline(a=0, b=1)
-  
-  totals=aggregate(collected[,-1], by=list(subbas=collected$subbas), FUN = sum)
-  totals$names=attr(d.meas.all, "subbasin_names")[-1]
-  
-  plot(totals$mod, totals$obs, col=1:nrow(totals), pch = 20) 
-  legend(x="topleft", legend=attr(d.meas.all, "subbasin_names")[-1], col=1:nrow(totals), pch = 20)
-  abline(a=0, b=1)
-  print(totals)
-
-  write.table(collected, file=paste0(run_dir,"/sed_yield_obs_mod.txt"), sep="\t", row.names=FALSE, quote=FALSE)            
-  if (save_plot) savePlot(filename=paste0(run_dir,"/sed_yield"), type="png")
-}
-
-
-subbas_id=1
-if (TRUE) # single subbas, plot time series sediment
-{  
-  res = read_wasa_results(ctrl_params,components_list=c(
-    "River_Sediment_total",
-    "daily_sediment_production",
-    "daily_total_overlandflow",
-    
-    "River_Flow",
-        "daily_water_subbasin"
-    #"water_subbasin"
-  ), subbas_id=subbas_id) #read WASA simulation results
-  dt = attr(res$result_array,"dt")
-  obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
-  
-  source("plot_rainfall_runoff.R") #include plotting routine
-  
-  
-  #convert to same units: m?/s
-  cols_in_m3 = attr(res$result_array,"units") == "m3" | attr(res$result_array,"units") == "m3/d"
-  res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / dt / 3600
-  
-  area = attr(res[[2]], "subbas_area")  
-  cols_in_mm = attr(res$result_array,"units") == "mm" | attr(res$result_array,"units") == "mm/d"
-  res$result_array[, cols_in_mm] = res$result_array[, cols_in_mm] /1e3 * area * 1e6 / (24*3600)
-  
-
-  x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin","daily_total_overlandflow",
-                                       "River_Sediment_total","daily_sediment_production")])[,]
-
-  
-  windows()
-  playwith(
-    plot_rainfall_runoff(x = x, xlim = NULL, ylim = NULL, subplot_assignment=c(0,2,1,2,2,2,3,3), s_colors = c("blue", "blue","red","magenta","black","red","magenta"), xlab="", ylab="", main = paste0(run_dir,"/",thread_dir,"; subbas:", subbas_id ))
-  )
-}
+# 
+#   x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin","daily_total_overlandflow",
+#                                        "River_Sediment_total","daily_sediment_production")])[,]
+# 
+#   
+#   windows()
+#   playwith(
+#     plot_rainfall_runoff(x = x, xlim = NULL, ylim = NULL, subplot_assignment=c(0,2,1,2,2,2,3,3), s_colors = c("blue", "blue","red","magenta","black","red","magenta"), xlab="", ylab="", main = paste0(run_dir,"/",thread_dir,"; subbas:", subbas_id ))
+#   )
+# }
