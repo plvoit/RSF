@@ -68,7 +68,7 @@ TRES_Res[6] <- as.numeric(TRES_Res[[6]])
 
 plot(TRES_F$F_41020002~TRES_F$Date, type = "l")
 plot(TRES_F156$F_156~TRES_F156$Date, type = "l", col = "red")
-lines(TRES_Res$`Vazão Vertida (m³/s)`~TRES_Res$`Data da Medição`, col = "blue", type ="l")
+#lines(TRES_Res$`Vazão Vertida (m³/s)`~TRES_Res$`Data da Medição`, col = "blue", type ="l")
 
 
 

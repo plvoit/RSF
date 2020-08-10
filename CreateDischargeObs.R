@@ -10,11 +10,11 @@ rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
 
-Q_ANA <- read.csv("~/Workspace/RioSaoFrancisco/Data/Processed/Q_ANA_corrected.txt")
+Q_ANA <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/Q_ANA_corrected.txt")
 Q_ANA$date <- as.POSIXct(Q_ANA$date)
 names(Q_ANA)[1] <- "Date"
 
-Q_FUNCEME <- read.csv("~/Workspace/RioSaoFrancisco/Data/Processed/Q_FUNCEME_corrected.txt")
+Q_FUNCEME <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/Q_FUNCEME_corrected.txt")
 Q_FUNCEME$Date <- as.POSIXct(Q_FUNCEME$Date)
 # create a dataframe of ONS Vazao Natural (naturalized run off)
 # for Sobradinho, Tres Marias and Xingo
@@ -81,7 +81,7 @@ SubbasID_GaugeNumber$Subbas_ID <- as.character(SubbasID_GaugeNumber$Subbas_ID)
 
 # renaming the columns with subbasin ID rather than gauge number, for this the function match() works well
 for (i in 2:18){
-  names(stations_model)[i] <- SubbasID_GaugeNumber[match(names(stations_model[i]), SubbasID_GaugeNumber$Gauges),"Subbas_ID"]
+  names(stations_model)[i] <- SubbasID_GaugeNumber[match(names(stations_model)[i], SubbasID_GaugeNumber$Gauges),"Subbas_ID"]
   
 }
 

@@ -30,6 +30,7 @@ attr_table[1,1] <- "F_49705000"
 
 SubbasID_GaugeNumber <- merge(SubbasID_GaugeNumber, attr_table, by.x = "Gauges", by.y = "ID")
 SubbasID_GaugeNumber <- SubbasID_GaugeNumber[,c(1,2,6,7)]
+#write.csv(SubbasID_GaugeNumber, file = "Data/Runoff-data/new.txt", row.names = FALSE)
 
 ################################################
 
