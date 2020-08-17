@@ -6,68 +6,63 @@ wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-S
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="1.2/"   #specifiy the directory (e.g., example1, tutorial, ...)
- 
+thread_dir="X4/"   #specifiy the directory (e.g., example1, tutorial, ...)
+
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
-
-save_plot=TRUE
-
-############
-  setwd("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/wasa_visualisation") #directory/location of R-files for visualisation
-  source(paste0("read_wasa_func.R"))        #in this location, access "read_wasa_func.R"
 
 #########################################
 # load clearer names from CheckWASAoutput.R for later labelling the plots
 # load GaugeNumber-SubbasID file
-SubbasID_GaugeNumber <- read.delim("~/Workspace/RioSaoFrancisco/Data/Runoff-data/SubbasID_GaugeNumber.txt")
+SubbasID_GaugeNumber <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/SubbasID_GaugeNumber.txt")
 SubbasID_GaugeNumber$Gauges <- as.character(SubbasID_GaugeNumber$Gauges)
-
-# create new column with clearer names
-# import attribute table from QGIS
-attr_table <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/stations_model_CSV.csv", stringsAsFactors = FALSE)
-attr_table[1,1] <- "F_49705000"
-
-SubbasID_GaugeNumber <- merge(SubbasID_GaugeNumber, attr_table, by.x = "Gauges", by.y = "ID")
-SubbasID_GaugeNumber <- SubbasID_GaugeNumber[,c(1,2,6,7)]
 #write.csv(SubbasID_GaugeNumber, file = "Data/Runoff-data/new.txt", row.names = FALSE)
+
+save_plot=TRUE
+
+############
+setwd("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/wasa_visualisation") #directory/location of R-files for visualisation
+source(paste0("read_wasa_func.R"))        #in this location, access "read_wasa_func.R"
+
 
 ################################################
 
 #read WASA runtime parameters, specify path of parameter.out, should be in the Output directory 
 ctrl_params = parse_wasa_ctrl_params(wasa_param_file=paste0(run_dir, "/0/",thread_dir,"Output/parameter.out"))
-  
+
 #execute this block if you get Error in file(file, "r") : cannot open the connection"
-     if (!grepl(ctrl_params$input_dir, pattern="^[a-zA-Z]:|^[/\\]")) #if this is a relative path, prepend working dir
-       ctrl_params$input_dir  = paste0(run_dir,ctrl_params$input_dir)
-     if (!grepl(ctrl_params$output_dir, pattern="^[a-zA-Z]:|^[/\\]")) #if this is a relative path, prepend working dir
-       ctrl_params$output_dir = paste0(run_dir,ctrl_params$output_dir)
+if (!grepl(ctrl_params$input_dir, pattern="^[a-zA-Z]:|^[/\\]")) #if this is a relative path, prepend working dir
+  ctrl_params$input_dir  = paste0(run_dir,ctrl_params$input_dir)
+if (!grepl(ctrl_params$output_dir, pattern="^[a-zA-Z]:|^[/\\]")) #if this is a relative path, prepend working dir
+  ctrl_params$output_dir = paste0(run_dir,ctrl_params$output_dir)
 
 #Manual fix of wrong relative paths
 ctrl_params$input_dir=paste(run_dir, "/0/", thread_dir, "Input/", sep = "")
 ctrl_params$output_dir=paste(run_dir, "/0/", thread_dir, "Output/", sep = "")
-  
+
 if (T) #compute runoff coefficients -> only for time period with measured data in discharge_obs_24.txt !! 
 {  
-#read WASA simulation results
-  subbas_id=c(73,11,10,12,13,78,15,16,90,58,96,45,3,1,4,9,2)
+  #read WASA simulation results # put the subbasins you want to look at in this vector
+ # subbas_id=c(78,73,15,16,90,58,96,45) #X2
+#  subbas_id=c(3) #X3
+  subbas_id = c(1) #X4
   #length(subbas_id)
- 
-
+  
+  
   res = read_wasa_results(ctrl_params,components_list=c(
     "River_Flow",     # this only works well, if subbasin does not get inflow from upstream subbasins
     "daily_water_subbasin"
-    ), subbas_id=subbas_id)  #the strange structure is due to compatibility wiht RHydro package
+  ), subbas_id=subbas_id)  #the strange structure is due to compatibility wiht RHydro package
   #read observations
   #ctrl_params$input_dir <- "C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/WASA-SED/0/Input" ## Quickfix because the slash doesn't work 
   obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), # an dieser Stelle bleibt "River_Flow, auch wenn "daily water subbas" ausgew?hlt
                           wasa_input_dir=ctrl_params$input_dir)
-
+  
   t_res = as.numeric(difftime(res[[1]][2], res[[1]][1], units="sec")) #temporal resolution in seconds
   
   data_cols = dimnames(res[[2]])[[2]] #names of WASA result columns
-
-#compute runoff coefficients
+  
+  #compute runoff coefficients
   mod_df=data.frame(datenum=res$datevec, res$result_array) #convert to dataframe
   
   obs_mod = merge(mod_df, obs) #merge observations and model results
@@ -76,7 +71,7 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
   sum_runoff_mod_DailyWaterSubbas=NULL 
   sum_runoff_obs=NULL
   sum_rainfall_obs=NULL
-
+  
   # calculate rc_mod_RiverFlow = runoff for modelled "River_Flow"; only makes sense for head water catchments
   for (i in 1:length(subbas_id))
   {  
@@ -86,11 +81,11 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
       "River_Flow", 
       #"daily_water_subbasin",
       ifelse(length(subbas_id)==1, "", paste0("_X", subbas))),
-                          paste0("sub",subbas),
-                          paste0("rain_",subbas))
+      paste0("sub",subbas),
+      paste0("rain_",subbas))
     
     concommittant_data = na.omit(obs_mod[, relevant_columns]) #select non-NA data only
-   
+    
     area = attr(res[[2]], "subbas_area")[i]
     if (subbas==4) #outlet - use rough areal mean of rainfall
       area = sum(attr(res[[2]], "subbas_area"))
@@ -104,7 +99,7 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
       mean_rainfall_obs = apply(X = obs[,grepl(pattern = "rain_[0-9]*", x = names(obs) )], MAR=2, FUN=mean, na.rm=TRUE) #mean rainfall per timestep for each subbasin [mm]  
       sum_rainfall_obs[i] =  nrow(concommittant_data) * sum(mean_rainfall_obs * attr(res[[2]], "subbas_area") / sum(attr(res[[2]], "subbas_area"))) #area-weighted mean rainfall per timestep
     }
-  
+    
   }
   
   # calculate rc_mod_DailyWaterSubbas = runoff for modelled "daily_water_subbasin"
@@ -138,10 +133,10 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
   }
   
   # Label for plot "sum_runoff"
-    #To fix "Error in plot.new(): figure margins too large", install calibrate package
-    install.packages(calibrate)
-    #load the calibrate package
-    library(calibrate)
+  #To fix "Error in plot.new(): figure margins too large", install calibrate package
+  #install.packages(calibrate)
+  #load the calibrate package
+  #library(calibrate)
   
   windows()  
   # if plot doesn't work, clear plot history (broomstick symbol in Plot window)
@@ -163,135 +158,137 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
   rc_obs = sum_runoff_obs / sum_rainfall_obs
   rc_mod_RiverFlow = sum_runoff_mod_RiverFlow / sum_rainfall_obs
   rc_mod_DailyWaterSubbas = sum_runoff_mod_DailyWaterSubbas / sum_rainfall_obs
-
+  
   print(data.frame(name=attr(obs, "subbasin_names")[-1],rc_obs, rc_mod_RiverFlow,rc_mod_DailyWaterSubbas))
 }
 
-  rc_data=data.frame(name=attr(obs, "subbasin_names")[-1],rc_obs, rc_mod_RiverFlow, rc_mod_DailyWaterSubbas)
-  rc_data=unique(rc_data) #remove duplicate rows
-  ##########
-  # add clearer names
-  for (i in 1:nrow(rc_data)){
-    rc_data[i,5] <- SubbasID_GaugeNumber[match(rc_data[i,1],SubbasID_GaugeNumber$Subbas_ID),"km.source"]
-    rc_data[i,6] <- SubbasID_GaugeNumber[match(rc_data[i,1],SubbasID_GaugeNumber$Subbas_ID),"Index"]
-  }
-  rc_data <- rc_data[,c(1,5,6,2:4)]
-  names(rc_data)[c(1,2,3)] <- c("Subbasin ID","Info","Index")
-  
-  # Display sorted runoff coefficients
-  rc_data[order(rc_data$Index),]
-  
+rc_data=data.frame(name=attr(obs, "subbasin_names")[-1],rc_obs, rc_mod_RiverFlow, rc_mod_DailyWaterSubbas)
+rc_data=unique(rc_data) #remove duplicate rows
+##########
+# add clearer names
+for (i in 1:nrow(rc_data)){
+  rc_data[i,5] <- SubbasID_GaugeNumber[match(rc_data[i,1],SubbasID_GaugeNumber$Subbas_ID),"km.source"]
+  rc_data[i,6] <- SubbasID_GaugeNumber[match(rc_data[i,1],SubbasID_GaugeNumber$Subbas_ID),"Index"]
+}
+rc_data <- rc_data[,c(1,5,6,2:4)]
+names(rc_data)[c(1,2,3)] <- c("Subbasin ID","Info","Index")
+
+# Display sorted runoff coefficients
+rc_data[order(rc_data$Index),]
+
+# little Quickfix to keep the Indexing for the next loop working
+SubbasID_GaugeNumber <- SubbasID_GaugeNumber[SubbasID_GaugeNumber$Subbas_ID %in% subbas_id,]
 ####################### 
 ######WATER BALANCE#####  
 ########################
 # change from original. Create loop visualize and save all the subbasins where observations are used
-  for ( i in SubbasID_GaugeNumber$Subbas_ID){
+for ( i in SubbasID_GaugeNumber$Subbas_ID){
   
   subbas_id= i 
-if (TRUE) #  plot time series water
-{  
-  res = read_wasa_results(ctrl_params,components_list=c(
-    #"deep_gw_recharge",
-    #"deep_gw_discharge",
-    #"gw_loss",                                                      
-    #"daily_qhorton",
-    #"daily_subsurface_runoff",
-    "daily_total_overlandflow",
-    "total_overlandflow",
-    #"daily_actetranspiration",
-    "River_Flow",
-    #"daily_potetranspiration",
-    "daily_water_subbasin",
-    "water_subbasin"
+  if (TRUE) #  plot time series water
+  {  
+    res = read_wasa_results(ctrl_params,components_list=c(
+      #"deep_gw_recharge",
+      #"deep_gw_discharge",
+      #"gw_loss",                                                      
+      #"daily_qhorton",
+      #"daily_subsurface_runoff",
+      "daily_total_overlandflow",
+      "total_overlandflow",
+      #"daily_actetranspiration",
+      "River_Flow",
+      #"daily_potetranspiration",
+      "daily_water_subbasin",
+      "water_subbasin"
     ), subbas_id=subbas_id) #read WASA simulation results
-  dt = attr(res$result_array,"dt")
-  
-  
-  #Observation Data
-  
-  ##discharge_obs_24.txt in WASA-Input Time_Series
-  obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
-  
-  ## if no observation data
-  #obs=NULL
-  
-  source("plot_rainfall_runoff.R") #include plotting routine
-  
-  #convert to same units: m3/s
-  cols_in_m3 = attr(res$result_array,"units") == "m3" | attr(res$result_array,"units") == "m3/d"
-  res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / dt / 3600
+    dt = attr(res$result_array,"dt")
     
-  area = attr(res[[2]], "subbas_area")  
-  cols_in_mm = attr(res$result_array,"units") == "mm" | attr(res$result_array,"units") == "mm/d"
-  res$result_array[, cols_in_mm] = res$result_array[, cols_in_mm] /1e3 * area * 1e6 / (24*3600)
-  
-  if (attr(res$result_array,"dt")==1)
+    
+    #Observation Data
+    
+    ##discharge_obs_24.txt in WASA-Input Time_Series
+    obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
+    
+    ## if no observation data
+    #obs=NULL
+    
+    source("plot_rainfall_runoff.R") #include plotting routine
+    
+    #convert to same units: m3/s
+    cols_in_m3 = attr(res$result_array,"units") == "m3" | attr(res$result_array,"units") == "m3/d"
+    res$result_array[, cols_in_m3] = res$result_array[, cols_in_m3] / dt / 3600
+    
+    area = attr(res[[2]], "subbas_area")  
+    cols_in_mm = attr(res$result_array,"units") == "mm" | attr(res$result_array,"units") == "mm/d"
+    res$result_array[, cols_in_mm] = res$result_array[, cols_in_mm] /1e3 * area * 1e6 / (24*3600)
+    
+    if (attr(res$result_array,"dt")==1)
       x=cbind(obs, mod=res$result_array[,c("River_Flow","water_subbasin",      "total_overlandflow")])[,] else
-      x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin","daily_total_overlandflow")])[,]
-  
-  #x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin")])[,]
-  #x=cbind(obs, mod=res$result_array[,c("River_Flow","water_subbasin")])[,]
-  
-  #x=cbind(obs, mod=res$result_array[,c("River_Flow")])[,]
-  x$mod.River_Flow
-  
-summary(res$result_array[,c("River_Flow","daily_water_subbasin")])
-  
- windows()
- 
-  #Plot names if thread specified - Full time span
-  plot_rainfall_runoff(x, xlim = NULL, ylim = NULL, x_col=1, subplot_assignment=c(0,2,1,2,2,2), s_colors = c("blue","cyan","red","magenta","black"), xlab="", ylab="",
-                      main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"])
-
-  ## create folder to save the visualisation
-  if ( dir.exists(thread_dir) == FALSE){
-    dir.create(thread_dir)
+        x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin","daily_total_overlandflow")])[,]
+    
+    #x=cbind(obs, mod=res$result_array[,c("River_Flow","daily_water_subbasin")])[,]
+    #x=cbind(obs, mod=res$result_array[,c("River_Flow","water_subbasin")])[,]
+    
+    #x=cbind(obs, mod=res$result_array[,c("River_Flow")])[,]
+    x$mod.River_Flow
+    
+    summary(res$result_array[,c("River_Flow","daily_water_subbasin")])
+    
+    windows()
+    
+    #Plot names if thread specified - Full time span
+    plot_rainfall_runoff(x, xlim = NULL, ylim = NULL, x_col=1, subplot_assignment=c(0,2,1,2,2,2), s_colors = c("blue","cyan","red","magenta","black"), xlab="", ylab="",
+                         main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"])
+    
+    ## create folder to save the visualisation
+    if ( dir.exists(thread_dir) == FALSE){
+      dir.create(thread_dir)
+    }
+    
+    savePlot(paste(thread_dir,SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
+                   "_",substring(thread_dir,1,nchar(thread_dir)-1), ".png", sep = ""), "png")
   }
-  
-  savePlot(paste(thread_dir,SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
-                 "_",substring(thread_dir,1,nchar(thread_dir)-1), ".png", sep = ""), "png")
-}
 } # end of for loop
 #stop()
 
-  ########
-  
+########
+
 ######## Proceed here  
- Volume_error_DF <- data.frame( "ID" = c(), "Volume Error[mm]" = c(), "km.source" = c(), "Index" = c())
-  
+Volume_error_DF <- data.frame( "ID" = c(), "Volume Error[mm]" = c(), "km.source" = c(), "Index" = c())
+
 if (save_plot) windows()
 #plot water balance and runoff components
-  # set counter for indexing Volume Error dataframe
-  counter = 1
-  for (subbas_id in SubbasID_GaugeNumber$Subbas_ID) 
-  {  
+# set counter for indexing Volume Error dataframe
+counter = 1
+for (subbas_id in SubbasID_GaugeNumber$Subbas_ID) 
+{  
   res = read_wasa_results(ctrl_params,components_list=c(
     "gw_loss",                                                      
     #     "deep_gw_recharge",
-     "deep_gw_discharge",
+    "deep_gw_discharge",
     
-#     #"daily_qhorton",
-     "daily_subsurface_runoff",
-     "daily_total_overlandflow",
-     "daily_actetranspiration",
-     "daily_water_subbasin"
-#     #"River_Flow",
-#     #"daily_potetranspiration",
-
-#"gw_discharge",
-
-#     "subsurface_runoff",
-#     "total_overlandflow",
-#     "actetranspiration",
-#     "water_subbasin"
+    #     #"daily_qhorton",
+    "daily_subsurface_runoff",
+    "daily_total_overlandflow",
+    "daily_actetranspiration",
+    "daily_water_subbasin"
+    #     #"River_Flow",
+    #     #"daily_potetranspiration",
+    
+    #"gw_discharge",
+    
+    #     "subsurface_runoff",
+    #     "total_overlandflow",
+    #     "actetranspiration",
+    #     "water_subbasin"
     
   ), subbas_id=subbas_id) #read WASA simulation results
   dt = attr(res$result_array,"dt")
-
+  
   dimnames(  res$result_array)[[2]] = sub(pattern="daily_|deep_", repl="", dimnames(  res$result_array)[[2]]) #work with daily data and hourly data with the same names
-
+  
   obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
-
+  
   
   #convert to same units: mm
   area = attr(res[[2]], "subbas_area") #subbasin area[km²]
@@ -301,21 +298,21 @@ if (save_plot) windows()
   
   cols_in_m3s = attr(res$result_array,"units") == "m3/s" 
   res$result_array[, cols_in_m3s] = res$result_array[, cols_in_m3s]* (dt*3600) / (area*1e6) * 1e3
-
+  
   mod_df=data.frame(datenum=res$datevec, res$result_array) #convert to dataframe
   obs_mod = merge(mod_df, obs) #merge observations and model results
-
+  
   totals=apply(obs_mod[,-1], 2, sum) #sum up total amounts
   names(totals) = gsub(names(totals), pattern="rain_.*", repl="rain") #rename rain column
-
-#water balance
+  
+  #water balance
   # groundwater storage
   tt=read.table(paste0(ctrl_params$output_dir, "gw_storage.stat"), header=TRUE, skip=1)
   tt=tt[tt$Subbasin %in% subbas_id,]
   tt$stor_m3 = tt[,3]*1e3 * tt[,4]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:3)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   gw_storage=data.frame(subbas_id=t2$subbas_id, end=t2$stor_m3/t2[,2] /1e3)
-
+  
   tt=read.table(paste0(ctrl_params$output_dir, "gw_storage.stat_start"), header=TRUE, skip=1)
   tt=tt[tt$Subbasin %in% subbas_id,]
   tt$stor_m3 = tt[,3]*1e3 * tt[,4]   #compute storage [m³]
@@ -323,14 +320,14 @@ if (save_plot) windows()
   gw_storage$start= t2$stor_m3/t2[,2] /1e3
   gw_storage = gw_storage[gw_storage$subbas_id %in% subbas_id,]
   gw_storage$balance = gw_storage$end - gw_storage$start
-
+  
   # #interception
   tt=read.table(paste0(ctrl_params$output_dir, "intercept_storage.stat"), header=TRUE, skip=1)
   tt=tt[tt$Subbasin %in% subbas_id,]
   tt$stor_m3 = tt[,5]*1e3 * tt[,6]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:5)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   intercept_storage=data.frame(subbas_id=t2$subbas_id, end=t2$stor_m3/t2[,2] /1e3)
-
+  
   tt=read.table(paste0(ctrl_params$output_dir, "intercept_storage.stat_start"), header=TRUE, skip=1)
   tt=tt[tt$Subbasin %in% subbas_id,]
   tt$stor_m3 = tt[,5]*1e3 * tt[,6]   #compute storage [m³]
@@ -347,7 +344,7 @@ if (save_plot) windows()
   tt = tt[tt$Subbasin %in% subbas_id,]
   river_storage$start = tt[,2]/(area*1e6) * 1e3
   river_storage$balance = river_storage$end - river_storage$start
-
+  
   #soil_moisture
   tt=read.table(paste0(ctrl_params$output_dir, "soil_moisture.stat"), header=TRUE, skip=1)
   tt=tt[tt$Subbasin %in% subbas_id,]  
@@ -381,21 +378,21 @@ if (save_plot) windows()
   #   lake_volume$start = t2[,2]/(area*1e6) * 1e3
   #   lake_volume$balance = lake_volume$end - lake_volume$start
   # }
-
+  
   par(mfcol=c(1,2))
   #plot balance
   plotdata=cbind(input=c(totals["rain"], ET=0, gw_loss=0),
-          output=c(runoff=totals["water_subbasin"], ET=totals["actetranspiration"], gw_loss=totals["gw_loss"])
-    )
+                 output=c(runoff=totals["water_subbasin"], ET=totals["actetranspiration"], gw_loss=totals["gw_loss"])
+  )
   row.names(plotdata)=c("rain_runoff", "ET", "gw_loss")
   balances = c(gw_storage=gw_storage$balance, intercept_storage=intercept_storage$balance, soil_storage=soil_moisture$balance) #, river_storage=river_storage$balance) , lake_storage=lake_volume$balance
   storages=data.frame(depleted = pmax(0,-balances), filled = pmax(0,balances), row.names=names(balances))
   
   plotdata = rbind(plotdata, 
                    as.matrix(storages)
-                   )
+  )
   plotdata = plotdata[nrow(plotdata):1,] #reverse order
-
+  
   barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)),
           main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
           ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[mm]")
@@ -405,35 +402,35 @@ if (save_plot) windows()
   Volume_error_DF[counter,"Volume Error [mm]"] <- diff(apply(plotdata,2,sum))
   Volume_error_DF[counter,"km.source"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
   Volume_error_DF[counter,"Index"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"Index"]
-
+  
   #plot runoff components
   plotdata=totals[c("gw_discharge", "subsurface_runoff", "total_overlandflow")]
   plotdata["subsurface_runoff"] = plotdata["subsurface_runoff"] - plotdata["gw_discharge"]
   names(plotdata) =c("groundwater","interflow", "surface")
-
+  
   vol_error=abs(totals["water_subbasin"] - sum(plotdata))/totals["water_subbasin"]
   #if (vol_error > 0.01)
   #stop(paste0("large volume error in runoff components: ", vol_error))
   plotdata = cbind(components = plotdata
-  #                 total=c(totals["daily_water_subbasin"],0,0)
-    )
+                   #                 total=c(totals["daily_water_subbasin"],0,0)
+  )
   
   barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), ylab="[mm]",
           main=paste0("runoff subbasin ",main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]),
           ylim=c(0,sum(plotdata)*1.4), args.legend=list(x="top"))
-points(1,totals["water_subbasin"], pch="*", cex=2)
-
-
-## create folder to save the visualisation
-if ( dir.exists(thread_dir) == FALSE){
-  dir.create(thread_dir)
-}
-
+  points(1,totals["water_subbasin"], pch="*", cex=2)
+  
+  
+  ## create folder to save the visualisation
+  if ( dir.exists(thread_dir) == FALSE){
+    dir.create(thread_dir)
+  }
+  
   if (save_plot) savePlot(filename = paste(thread_dir,"waterBalance_",
                                            SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
                                            ,"_",substring(thread_dir,1,nchar(thread_dir)-1),".png",sep = ""), type="png")
- counter = counter + 1
-  }
+  counter = counter + 1
+}
 
 ####################################
 # This seems to be just for sediment

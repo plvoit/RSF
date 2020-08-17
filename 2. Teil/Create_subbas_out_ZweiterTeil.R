@@ -17,13 +17,20 @@ for (i in 2:ncol(TRES.MARIAS_Defluencia)){
 # take the dates from 2000-2009
 TRES.MARIAS_Defluencia<- TRES.MARIAS_Defluencia[TRES.MARIAS_Defluencia$Date >= "2000-01-01" & TRES.MARIAS_Defluencia$Date <= "2009-12-31", ]
 
-
-
 TRES.MARIAS_Defluencia$Date <- format(TRES.MARIAS_Defluencia$Date, "%d%m%Y")
 
-names(TRES.MARIAS_Defluencia)[1] <- "0"
+#add timestep column 
+TRES.MARIAS_Defluencia$Timestep <- "1"
+
+TRES.MARIAS_Defluencia <- TRES.MARIAS_Defluencia[,c(1,3,2)]
+names(TRES.MARIAS_Defluencia)[c(1,2)] <- "0"
+
+#theres one NA that needs to be interpolated
+#TRES.MARIAS_Defluencia$'2' <-  na.approx(TRES.MARIAS_Defluencia$'2')
+#names(TRES.MARIAS_Defluencia)[1] <- "0"
+
 
 #save file
-write.table(TRES.MARIAS_Defluencia,file ="subbasin_out.dat.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(TRES.MARIAS_Defluencia,file ="subbasin_out.dat", sep = "\t", row.names = FALSE, quote = FALSE)
 
 ## add header manually
