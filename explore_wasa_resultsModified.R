@@ -2,11 +2,18 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 
+## subbasin to explore
+#read WASA simulation results # put the subbasins you want to look at in this vector
+# subbas_id=c(78,73,15,16,90,58,96,45) #X2
+#  subbas_id=c(3) #X3
+# subbas_id = c(1) #X4
+subbas_id = c(1,2,3) #X5
+
 wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Input/Time_series",sep="")
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="X4/"   #specifiy the directory (e.g., example1, tutorial, ...)
+thread_dir="X5/"   #specifiy the directory (e.g., example1, tutorial, ...)
 
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
@@ -43,10 +50,10 @@ ctrl_params$output_dir=paste(run_dir, "/0/", thread_dir, "Output/", sep = "")
 if (T) #compute runoff coefficients -> only for time period with measured data in discharge_obs_24.txt !! 
 {  
   #read WASA simulation results # put the subbasins you want to look at in this vector
- # subbas_id=c(78,73,15,16,90,58,96,45) #X2
-#  subbas_id=c(3) #X3
-  subbas_id = c(1) #X4
-  #length(subbas_id)
+  # subbas_id=c(78,73,15,16,90,58,96,45) #X2
+  #  subbas_id=c(3) #X3
+  # subbas_id = c(1) #X4
+  #subbas_id = c(1,2,3) #X5
   
   
   res = read_wasa_results(ctrl_params,components_list=c(
