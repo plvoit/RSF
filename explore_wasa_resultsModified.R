@@ -1,5 +1,6 @@
 #working_dir=rm(list = ls())
 rm(list = ls())
+
 setwd("~/Workspace/RioSaoFrancisco")
 
 ## subbasin to explore
@@ -7,13 +8,14 @@ setwd("~/Workspace/RioSaoFrancisco")
 # subbas_id=c(78,73,15,16,90,58,96,45) #X2
 #  subbas_id=c(3) #X3
 # subbas_id = c(1) #X4
-subbas_id = c(1,2,3) #X5
+#subbas_id = c(1,2,3) #X5
+subbas_id = c(15) #X6
 
 wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Input/Time_series",sep="")
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="X5/"   #specifiy the directory (e.g., example1, tutorial, ...)
+thread_dir="X6/"   #specifiy the directory (e.g., example1, tutorial, ...)
 
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"

@@ -31,4 +31,5 @@ write.table(discharge_obs_24,file ="discharge_obs_24.txt", sep = "\t", row.names
 discharge_obs_24 <- read.delim("~/Workspace/RioSaoFrancisco/WASA-SED/0/X5/Input/Time_series/discharge_obs_24.txt", header=FALSE, skip = 1)
 summary(discharge_obs_24)
 
-discharge_obs_24[,c(5,7)] <- gsub(",",".",discharge_obs_24[,c(5,7)])
+#discharge_obs_24[,c(5,7)] <- gsub(",",".",discharge_obs_24[,c(5,7)])
+#geht so nicht
