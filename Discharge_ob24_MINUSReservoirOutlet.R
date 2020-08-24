@@ -41,4 +41,15 @@ discharge_obs_24[discharge_obs_24 == 9999 ] <- NA
 
 summary(discharge_obs_24)
 
-write.table(discharge_obs_24,file ="discharge_obs_24.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+#write.table(discharge_obs_24,file ="discharge_obs_24.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
+withOutput <-  read.delim("~/Workspace/RioSaoFrancisco/Data/Runoff-data/ORIGINAL discharge_obs/discharge_obs_24_NaturalizedFlow.txt",header=T, skip = 4,check.names = F)
+
+#### plotten und Vergleichen der beiden Abflüsse aus den dischargeobs_versionen
+
+for (i in 5:21){
+  plot(withOutput[,i], type = "l", main = i)
+  lines(discharge_obs_24[,i], type = "l", col = "red")
+}
+
+plot(discharge_obs_24[,5]~discharge_obs_24$DD)
