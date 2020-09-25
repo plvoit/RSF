@@ -1,4 +1,4 @@
-## This script extract values from a NetCDF-file (3d-array of lat,lon,time) containing precipitation values at
+## This script extract values from a NetCDF-file (3d-array of lat,lon,time) containing precipitation (or every other variable) values at
 ## given polygons. The mean cell value for each polygone is calculated and concanated 
 ## to a timeseries for each subbasin. Because
 ## this script provided the data for CheckERA5-script and is now used to extract
@@ -16,7 +16,7 @@ library(foreach)
 library(doParallel)
 
 ## create a list of all netcdf files in folder (one for each year)
-all_files <- dir("~/Workspace/RioSaoFrancisco/Data/ERA5-RAW/Test", full.names = TRUE)
+all_files <- dir("~/Workspace/RioSaoFrancisco/Data/ERA5-RAW/Test", full.names = TRUE)  #put here the path  to the NetCDF-Files
 all_files_short <- dir("~/Workspace/RioSaoFrancisco/Data/ERA5-RAW/Test")
 
 ## stack all the netcdf files into one raster stack. One raster per timestep (day)
