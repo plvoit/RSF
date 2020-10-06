@@ -87,25 +87,42 @@ for (i in 2:18){
 
 # the dataframe needs to be in a certain format to run the test on WASA
 
+# take the dates from 2000-2009
+stations_model <- stations_model[stations_model$Date >= "1981-01-01" & stations_model$Date <= "2019-12-31", ]
+
+###manually add date from 01.01.2019 to 31.12.2019
+## create date vector for dataframe ###!!!! this could be done more elegant as done in script getNCEP
+# start <- as.POSIXct("2019-01-01", format = c("%Y-%m-%d"), tz = "UTC")
+# end <- as.POSIXct("2019-12-31", format = c("%Y-%m-%d"), tz = "UTC")
+# time_vector <- seq(start,end, by ="day")
+# 
+# year2019 <- data.frame(time_vector,NA)
+# year2019[,c(3:18)] <- NA
+# names(year2019) <- names(stations_model)
+# 
+# stations_model <- rbind(stations_model,year2019)
+################
+
 stations_model$YYYY <- format(stations_model$Date, "%Y")
 stations_model$MM <- format(stations_model$Date, "%m")
 stations_model$DD <- format(stations_model$Date, "%d")
 stations_model$HH <- 0
 
-# take the dates from 2000-2009
-stations_model <- stations_model[stations_model$Date >= "2000-01-01" & stations_model$Date <= "2009-12-31", ]
+date_vector <- stations_model$Date
 
 #reorder and kick out DateTime column
 stations_model <- stations_model[,c(19,20,21,22,2:18)]
 stations_model[,4:21] <- round(stations_model[,4:21],2)
 
+
 #save file
-write.table(stations_model,file ="discharge_obs_24.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(stations_model,file ="discharge_obs_24_1981-2019.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 
 #the necessary header will be attached manually in the text editor
-
+windows()
 
 #check the results
 for ( i in 5:21){
-  plot(stations_model[,i], type = "l", main = colnames(stations_model)[i])
+  plot(stations_model[,i]~date_vector, type = "l", main = colnames(stations_model)[i], xlab = "Year", ylab = "discharge m^3/s")
+       savePlot(paste(colnames(stations_model)[i],"_discharge1981-2019",".png", sep = ""), "png")
 }

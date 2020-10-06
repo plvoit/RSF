@@ -56,7 +56,7 @@ proc.time()-ptm                #end timer for code block
 #save.image(file = "workspace_NCEP.RData")
 
 #Restore the workspace
-load("workspace_NCEP.RData")
+#load("workspace_NCEP.RData")
 
 ## bind all the rows together
 DF_mean <- as.data.frame(do.call(rbind, result_list))
@@ -100,4 +100,6 @@ DF_mean_daily$Date <- as.POSIXct(format(DF_mean_daily$Date, "%Y-%m-%d"))
 write.csv(DF_mean_daily, file = "NCEP2000_2009_rHum_at_75subbasins.txt", row.names = FALSE)
 
 
+#save.image(file = "workspace_NCEP30years.RData")
 
+#load("workspace_NCEP30years.RData")

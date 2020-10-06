@@ -3,19 +3,11 @@ rm(list = ls())
 
 setwd("~/Workspace/RioSaoFrancisco")
 
-## subbasin to explore
-#read WASA simulation results # put the subbasins you want to look at in this vector
-# subbas_id=c(78,73,15,16,90,58,96,45) #X2
-#  subbas_id=c(3) #X3
-# subbas_id = c(1) #X4
-#subbas_id = c(1,2,3) #X5
-subbas_id = c(15) #X6
-
 wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Input/Time_series",sep="")
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="X6/"   #specifiy the directory (e.g., example1, tutorial, ...)
+thread_dir="X5/"   #specifiy the directory (e.g., example1, tutorial, ...)
 
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
@@ -52,10 +44,11 @@ ctrl_params$output_dir=paste(run_dir, "/0/", thread_dir, "Output/", sep = "")
 if (T) #compute runoff coefficients -> only for time period with measured data in discharge_obs_24.txt !! 
 {  
   #read WASA simulation results # put the subbasins you want to look at in this vector
+  #!!! The same needs to be done in line 261
   # subbas_id=c(78,73,15,16,90,58,96,45) #X2
   #  subbas_id=c(3) #X3
   # subbas_id = c(1) #X4
-  #subbas_id = c(1,2,3) #X5
+  subbas_id = c(1,2,3) #X5
   
   
   res = read_wasa_results(ctrl_params,components_list=c(
@@ -265,12 +258,19 @@ for ( i in SubbasID_GaugeNumber$Subbas_ID){
 ######## Proceed here  
 Volume_error_DF <- data.frame( "ID" = c(), "Volume Error[mm]" = c(), "km.source" = c(), "Index" = c())
 
+#read WASA simulation results # put the subbasins you want to look at in this vector
+#subbas_id=c(78,73,15,16,90,58,96,45) #X2
+#  subbas_id=c(3) #X3
+# subbas_id = c(1) #X4
+subbas_id = c(1,2,3) #X5
+
+
 if (save_plot) windows()
 #plot water balance and runoff components
 # set counter for indexing Volume Error dataframe
 counter = 1
-for (subbas_id in SubbasID_GaugeNumber$Subbas_ID) 
-{  
+for (i in 1:length(subbas_id)) 
+{ 
   res = read_wasa_results(ctrl_params,components_list=c(
     "gw_loss",                                                      
     #     "deep_gw_recharge",
@@ -291,12 +291,12 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
     #     "actetranspiration",
     #     "water_subbasin"
     
-  ), subbas_id=subbas_id) #read WASA simulation results
+  ), subbas_id=subbas_id[i]) #read WASA simulation results
   dt = attr(res$result_array,"dt")
   
   dimnames(  res$result_array)[[2]] = sub(pattern="daily_|deep_", repl="", dimnames(  res$result_array)[[2]]) #work with daily data and hourly data with the same names
   
-  obs = read_observations(subbas_id=subbas_id, datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
+  obs = read_observations(subbas_id=subbas_id[i], datevec=res$datevec, target_component=c("River_Flow","rain"), wasa_input_dir=ctrl_params$input_dir)
   
   
   #convert to same units: mm
@@ -317,13 +317,13 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
   #water balance
   # groundwater storage
   tt=read.table(paste0(ctrl_params$output_dir, "gw_storage.stat"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]
+  tt=tt[tt$Subbasin %in% subbas_id[i],]
   tt$stor_m3 = tt[,3]*1e3 * tt[,4]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:3)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   gw_storage=data.frame(subbas_id=t2$subbas_id, end=t2$stor_m3/t2[,2] /1e3)
   
   tt=read.table(paste0(ctrl_params$output_dir, "gw_storage.stat_start"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]
+  tt=tt[tt$Subbasin %in% subbas_id[i],]
   tt$stor_m3 = tt[,3]*1e3 * tt[,4]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:3)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   gw_storage$start= t2$stor_m3/t2[,2] /1e3
@@ -332,41 +332,42 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
   
   # #interception
   tt=read.table(paste0(ctrl_params$output_dir, "intercept_storage.stat"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]
+  tt=tt[tt$Subbasin %in% subbas_id[i],]
   tt$stor_m3 = tt[,5]*1e3 * tt[,6]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:5)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   intercept_storage=data.frame(subbas_id=t2$subbas_id, end=t2$stor_m3/t2[,2] /1e3)
   
   tt=read.table(paste0(ctrl_params$output_dir, "intercept_storage.stat_start"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]
+  tt=tt[tt$Subbasin %in% subbas_id[i],]
   tt$stor_m3 = tt[,5]*1e3 * tt[,6]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:5)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   intercept_storage$start =  t2$stor_m3/t2[,2] /1e3
   intercept_storage$balance = intercept_storage$end - intercept_storage$start
   
-  #river storage
-  tt=read.table(paste0(ctrl_params$output_dir, "river_storage.stat"), header=TRUE, skip=1)
-  tt = tt[tt$Subbasin %in% subbas_id,]
-  river_storage=data.frame(subbas_id=tt$Subbasin, end=tt[,2]/(area*1e6) * 1e3)
-  
-  tt=read.table(paste0(ctrl_params$output_dir, "river_storage.stat_start"), header=TRUE, skip=1)
-  tt = tt[tt$Subbasin %in% subbas_id,]
-  river_storage$start = tt[,2]/(area*1e6) * 1e3
-  river_storage$balance = river_storage$end - river_storage$start
+  # #river storage ### Hier ist der Fehler, apparently not needed
+  # tt=read.table(paste0(ctrl_params$output_dir, "river_storage.stat"), header=FALSE, skip=2) ## This change is due to the different file format when using Unit Hydrograph
+  # names(tt)[1] = "Subbasin"
+  # tt = tt[tt$Subbasin %in% subbas_id[i],]
+  # river_storage=data.frame(subbas_id=tt$Subbasin, end=tt[,2]/(area*1e6) * 1e3)
+  # 
+  # tt=read.table(paste0(ctrl_params$output_dir, "river_storage.stat_start"), header=TRUE, skip=1, check.names = FALSE)
+  # tt = tt[tt$Subbasin %in% subbas_id[i],]
+  # river_storage$start = tt[,2]/(area*1e6) * 1e3
+  # river_storage$balance = river_storage$end - river_storage$start
   
   #soil_moisture
   tt=read.table(paste0(ctrl_params$output_dir, "soil_moisture.stat"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]  
+  tt=tt[tt$Subbasin %in% subbas_id[i],]  
   tt$stor_m3 = tt[,6]*1e3 * tt[,7]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:6)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   soil_moisture=data.frame(subbas_id=t2$subbas_id, end=t2$stor_m3/t2[,2] /1e3)
   
   tt=read.table(paste0(ctrl_params$output_dir, "soil_moisture.stat_start"), header=TRUE, skip=1)
-  tt=tt[tt$Subbasin %in% subbas_id,]
+  tt=tt[tt$Subbasin %in% subbas_id[i],]
   tt$stor_m3 = tt[,6]*1e3 * tt[,7]   #compute storage [m³]
   t2 = aggregate(tt[,-(1:6)], by=list(subbas_id=tt$Subbasin), FUN=sum)
   soil_moisture$start =  t2$stor_m3/t2[,2] /1e3
-  soil_moisture = soil_moisture[soil_moisture$subbas_id %in% subbas_id,]
+  soil_moisture = soil_moisture[soil_moisture$subbas_id %in% subbas_id[i],]
   soil_moisture$balance = soil_moisture$end - soil_moisture$start
   
   #lake
@@ -403,14 +404,14 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
   plotdata = plotdata[nrow(plotdata):1,] #reverse order
   
   barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)),
-          main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"],
+          main = SubbasID_GaugeNumber[match(subbas_id[i],SubbasID_GaugeNumber$Subbas_ID),"km.source"],
           ylim=c(0,max(apply(plotdata,2,sum)*1.7)), args.legend=list(x="top"), ylab="[mm]")
   print(paste0("Volume error [mm]: ",diff(apply(plotdata,2,sum))))
   
-  Volume_error_DF[counter,"ID"] <- subbas_id
+  Volume_error_DF[counter,"ID"] <- subbas_id[i]
   Volume_error_DF[counter,"Volume Error [mm]"] <- diff(apply(plotdata,2,sum))
-  Volume_error_DF[counter,"km.source"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
-  Volume_error_DF[counter,"Index"] <- SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"Index"]
+  Volume_error_DF[counter,"km.source"] <- SubbasID_GaugeNumber[match(subbas_id[i],SubbasID_GaugeNumber$Subbas_ID),"km.source"]
+  Volume_error_DF[counter,"Index"] <- SubbasID_GaugeNumber[match(subbas_id[i],SubbasID_GaugeNumber$Subbas_ID),"Index"]
   
   #plot runoff components
   plotdata=totals[c("gw_discharge", "subsurface_runoff", "total_overlandflow")]
@@ -425,7 +426,7 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
   )
   
   barplot(height=plotdata, legend.text=row.names(plotdata), col=rainbow(nrow(plotdata)), ylab="[mm]",
-          main=paste0("runoff subbasin ",main = SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]),
+          main=paste0("runoff subbasin ",main = SubbasID_GaugeNumber[match(subbas_id[i],SubbasID_GaugeNumber$Subbas_ID),"km.source"]),
           ylim=c(0,sum(plotdata)*1.4), args.legend=list(x="top"))
   points(1,totals["water_subbasin"], pch="*", cex=2)
   
@@ -436,7 +437,7 @@ for (subbas_id in SubbasID_GaugeNumber$Subbas_ID)
   }
   
   if (save_plot) savePlot(filename = paste(thread_dir,"waterBalance_",
-                                           SubbasID_GaugeNumber[match(subbas_id,SubbasID_GaugeNumber$Subbas_ID),"km.source"]
+                                           SubbasID_GaugeNumber[match(subbas_id[i],SubbasID_GaugeNumber$Subbas_ID),"km.source"]
                                            ,"_",substring(thread_dir,1,nchar(thread_dir)-1),".png",sep = ""), type="png")
   counter = counter + 1
 }

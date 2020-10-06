@@ -15,7 +15,7 @@ T2m <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/ERA52000_2009
 T2m[,1:75] <- T2m[,1:75] - 273.15
 T2m[,1:75] <- round(T2m[,1:75],1)
 
-rHum <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/NCEP2000_2009_rHum_at_75subbasins.txt", check.names = FALSE)
+rHum <- read.csv("~/Workspace/RioSaoFrancisco/Backupcopy Input WASA/NCEP2009_2019_rHum_at_75subbasins.txt", check.names = FALSE)
 rHum[,2:76] <- round(rHum[,2:76],0)
 
 input_list <-  list(Precipitation,SSRD,T2m,rHum)
@@ -39,12 +39,17 @@ input_list <- lapply(input_list, function(x) {x["No. of days"] <- 1:nrow(x) ; x 
 input_list <- lapply(input_list, function(x) x <- x[,c("Date","No. of days", names(x))])
 input_list <- lapply(input_list, function(x) { x[c("Date.1","No. of days.1")] <- NULL; x })
 
+
+#### JUST QUICK FIX, DELETE AFTER USE
+
+#input_list[[4]]["No. of days"] <- c(10959:14610)
+
 # the WASA input files have a certain header structure. This is way the column name for Date and No. of days will
 # will be changed to zero
 
 input_list <- lapply(input_list, function(x) {names(x)[c(1,2)] <- c("0","0"); x })
 
-# save all the files in a folder. The header will be addded manually since it's just four timeseries files
+# save all the files in a folder. The header will be added manually since it's just four timeseries files
 
 for (i in 1:length(input_list)){
   write.table(input_list[[i]],file = paste(naming_vector[i],".dat", sep = ""), sep = "\t", row.names = FALSE, quote = FALSE)
