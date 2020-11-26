@@ -45,7 +45,7 @@ for (i in 1:length(files)){
     colnames(Q_file)[2] <- paste("F",substr(files_short[i],1,nchar(files_short[i])-4),sep = "_")
     
     ## Get Gauge ID information from first line of file
-    # dummy <- scan(files[i], what = "charachter", n = 6)
+    # dummy <- scan(files[i], what = "character", n = 6)
     # dummy <- dummy[c(1:3,5,6)]
     # dummy <- paste(dummy, collapse = ' ' )
     # Q_file$Comment <- dummy
