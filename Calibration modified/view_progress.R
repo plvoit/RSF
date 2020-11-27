@@ -1,7 +1,9 @@
 #WASA calibration using PSO / DDS
 #display progress
 #run best and uncalibrated parameter set
-#setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration")
+
+rm(list = ls())
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration")
 
 library(ppso)
 base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration"
@@ -22,7 +24,7 @@ force_daily=TRUE #for hourly runs: force evaluation of performance measures in d
 
 runs2treat=
   c(
-"Zone1"
+"Zone3"
 
   )
 
@@ -42,7 +44,7 @@ for (run in runs2treat)
   if (sed==FALSE & file.exists("water_calib_files"))
     sub_dir="water_calib_files/"       #results of water calibration have already been moved to subdir
      
-  if (FALSE)
+  if (TRUE)
   {
     plot_optimization_progress(logfile = paste0(sub_dir,"dds.log"), projectfile = paste0(sub_dir,"dds.pro"), verbose = TRUE, cutoff_quantile = .8)
     #save plots as png
@@ -52,7 +54,7 @@ for (run in runs2treat)
   
   if (TRUE)
   {
-    if (FALSE)
+    if (TRUE)
     {
   #extract best parameter set to generate "paramset.txt" 
     dds_res = read.table(paste0(sub_dir,"dds.log"), sep="\t", header=TRUE)
@@ -113,7 +115,7 @@ for (run in runs2treat)
   }
   
   # run uncalibrated model
-   if (TRUE)
+   if (FALSE)
     {   
     nocal_dir=ifelse(!sed,"thread1_nocal","thread1_nocal_sed") #directory to store the uncalibrated run to
   

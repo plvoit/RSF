@@ -7,7 +7,7 @@ wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-S
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="3.1/"   #specifiy the directory (e.g., example1, tutorial, ...)
+thread_dir="Zone3cal/"   #specifiy the directory (e.g., example1, tutorial, ...)
 
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
@@ -45,10 +45,10 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
 {  
   #read WASA simulation results # put the subbasins you want to look at in this vector
   #!!! The same needs to be done in line 261
-  # subbas_id=c(78,73,15,16,90,58,96,45) #X2
-  #  subbas_id=c(3) #X3
-  # subbas_id = c(1) #X4
-  subbas_id = c(1,2,3) #X5
+  # subbas_id = c(10,11,12) #Zone 1
+  # subbas_id=c(78,73,15,16,90,58,96,45) #Zone2
+   subbas_id = c(1,2,3) #Zone3
+  
   
   
   res = read_wasa_results(ctrl_params,components_list=c(
@@ -189,14 +189,14 @@ for ( i in SubbasID_GaugeNumber$Subbas_ID){
   subbas_id= i 
   if (TRUE) #  plot time series water
   {  
-    res = read_wasa_results(ctrl_params,components_list=c(
+    res = read_wasa_results(ctrl_params,components_list=c(  # Choose here what to plot
       #"deep_gw_recharge",
       #"deep_gw_discharge",
       #"gw_loss",                                                      
       #"daily_qhorton",
       #"daily_subsurface_runoff",
       "daily_total_overlandflow",
-      "total_overlandflow",
+      #"total_overlandflow",
       #"daily_actetranspiration",
       "River_Flow",
       #"daily_potetranspiration",
@@ -259,11 +259,9 @@ for ( i in SubbasID_GaugeNumber$Subbas_ID){
 Volume_error_DF <- data.frame( "ID" = c(), "Volume Error[mm]" = c(), "km.source" = c(), "Index" = c())
 
 #read WASA simulation results # put the subbasins you want to look at in this vector
-#subbas_id=c(78,73,15,16,90,58,96,45) #X2
-#  subbas_id=c(3) #X3
-# subbas_id = c(1) #X4
-subbas_id = c(1,2,3) #X5
-
+ #subbas_id = c(10,11,12) #Zone 1
+# subbas_id=c(78,73,15,16,90,58,96,45) #Zone2
+ subbas_id = c(1,2,3) #Zone3
 
 if (save_plot) windows()
 #plot water balance and runoff components
