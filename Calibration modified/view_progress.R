@@ -24,7 +24,7 @@ force_daily=TRUE #for hourly runs: force evaluation of performance measures in d
 
 runs2treat=
   c(
-"Zone3"
+"Zone1NSE"
 
   )
 

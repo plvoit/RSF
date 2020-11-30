@@ -1,30 +1,36 @@
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/WASA-SED/0/")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/")
 
-thread <- "Zone3cal"
+thread <- "Zone1NSE"
 
 # load clearer names from CheckWASAoutput.R for later labelling the plots
 # load GaugeNumber-SubbasID file
 SubbasID_GaugeNumber <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/SubbasID_GaugeNumber.txt")
 SubbasID_GaugeNumber$Gauges <- as.character(SubbasID_GaugeNumber$Gauges)
 
-# subbas_id = c("10","11","12") #Zone 1
+ subbas_id = c("10","11","12") #Zone 1
 # subbas_id=c(78,73,15,16,90,58,96,45) #Zone2
-subbas_id = c("1","2","3") #Zone3
+#subbas_id = c("1","2","3") #Zone3
 
-obs <- read.delim(paste(thread,"/Input/Time_series/discharge_obs_24.txt", sep = "") , header= T, skip = 4, check.names  = F)
-mod <- read.table(paste(thread,"/Output/River_Flow.out", sep = ""), quote="\"", comment.char="", skip = 1, header = T, check.names = F)
+obs <- read.delim(paste(thread,"/thread1_best/Input/Time_series/discharge_obs_24.txt", sep = "") , header= T, skip = 4, check.names  = F)
+mod <- read.table(paste(thread,"/thread1_best/Output/River_Flow.out", sep = ""), quote="\"", comment.char="", skip = 1, header = T, check.names = F)
 
 obs <- obs[,c(1:4, match(subbas_id,colnames(obs)))]
 mod <- mod[,c(1,2,match(subbas_id,colnames(mod)))]
 
 
 ## Plot modeled and observed river discharge
+if ( dir.exists(paste(thread,"/CaliResults", sep = "")) == FALSE){
+  dir.create(paste(thread,"/CaliResults", sep = ""))
+}
+windows()
 for (i in subbas_id){
 
 plot(obs[[i]], type = "l", main = SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3], xlab = "days", ylab = "m3/s")
 lines(mod[[i]], type = "l", col = "red")
 legend("topright", legend= c("observed", "modeled"),col = c("black","red"), lty=1, cex=0.8)
+
+savePlot(paste(thread,"/CaliResults/",thread,"_M-O-Runoff ","_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".png", sep = ""), "png")
 }
 
 
@@ -35,6 +41,7 @@ mod$MonthYear <- obs$MonthYear
 
 obs_monthly_sum <- aggregate(obs[,subbas_id], by = list(obs$MonthYear), sum)
 mod_monthly_sum <- aggregate(mod[,subbas_id], by = list(mod$MonthYear), sum)
+
 
 
 # plot monthly sums
@@ -58,7 +65,9 @@ colnames(error_percent) <- SubbasID_GaugeNumber[match(colnames(error_percent),Su
 error_percent$Date <- residual_monthly$Date
 error_percent <- error_percent[,c(ncol(error_percent),1:length(subbas_id))]
 
-summary(error_percent[,c(2:(1+length(subbas_id)))])
+boxplot(error_percent[,c(2:(1+length(subbas_id)))], main = "Monthly error [%]", ylab = "error [%]")
+savePlot(paste(thread,"/CaliResults/",thread," MonthlyErrorPercent ","_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".png", sep = ""), "png")
+
 
 #mean monthly percentual error
 
@@ -69,8 +78,7 @@ names(mean_month_err)[1]  <- "Month"
 
 for ( i in 2:ncol(mean_month_err)){
   plot(mean_month_err[[i]]~mean_month_err$Month, type = "l", xlab = "Month", ylab = "mean monthly error [%]", main = paste("Mean monthly error: ",colnames(mean_month_err)[i], sep = ""))
+  savePlot(paste(thread,"/CaliResults/",thread," MMEPercent ","_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".png", sep = ""), "png")
 }
 
-
-plot(mean_month_err[[10]]~mean_month_err$Month, type = "l")
 
