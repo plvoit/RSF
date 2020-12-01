@@ -57,7 +57,7 @@ for (i in subbas_id){
 residual_monthly <- mod_monthly_sum[,match(subbas_id, colnames(mod_monthly_sum))] - obs_monthly_sum[,match(subbas_id,colnames(obs_monthly_sum))]
 residual_monthly$Date <- as.POSIXct(paste(obs_monthly_sum$Group.1,"-01",sep = ""), format = c("%Y-%m-%d"))
 residual_monthly <- residual_monthly[,c(ncol(residual_monthly),1:length(subbas_id))]
-write.csv(residual_monthly, file = paste(thread,"_residual_monthly.txt", sep = ""))
+#write.csv(residual_monthly, file = paste(thread,"_residual_monthly.txt", sep = ""))
 
 # plot monthly residuals
 for (i in subbas_id){
