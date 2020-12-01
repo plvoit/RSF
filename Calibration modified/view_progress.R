@@ -7,9 +7,7 @@ setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration")
 
 library(ppso)
 base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration"
-#base_dir="./"
-#base_dir="E:/till/uni/parameterisierung/Esera_2014/runs3/repl/"
-#base_dir="E:/till/uni/parameterisierung/Esera_2014/runs2/"
+
 sed=FALSE #consider sediments
 
 redo_run = FALSE #force redoing runs, even if already present (will be skipped otherwise)
@@ -19,12 +17,12 @@ redo_run = FALSE #force redoing runs, even if already present (will be skipped o
 
 force_daily=TRUE #for hourly runs: force evaluation of performance measures in daily resolution
 
-#setwd(base_dir)
+setwd(base_dir)
 #runs2treat = dir(path = base_dir, pattern = "^A_u_1_sed_") #1 water
 
 runs2treat=
   c(
-"Zone1NSE"
+"Zone2"
 
   )
 
