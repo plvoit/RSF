@@ -22,7 +22,7 @@ setwd(base_dir)
 
 runs2treat=
   c(
-"Zone2"
+"Zone1doScale"
 
   )
 
