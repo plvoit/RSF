@@ -1,8 +1,8 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/")
 
-thread <- "Zone1"  ## Check right subbas_id in line 11!
-saveplots <- FALSE
+thread <- "Test"  ## Check right subbas_id in line 11!
+saveplots <- TRUE
 
 # load clearer names from CheckWASAoutput.R for later labelling the plots
 # load GaugeNumber-SubbasID file
@@ -69,7 +69,8 @@ for (i in subbas_id){
 library(dygraphs)   # for nice interactive plot
 library(xts)        # dygraphs works with xts-format for timeseries
 library(htmlwidgets)
- 
+
+if (saveplots){
 setwd(paste(thread, "/CaliResults", sep = "")) 
 for(i in subbas_id){
    Vis <- as.xts(residual_monthly[[i]],residual_monthly$Date)
@@ -77,6 +78,7 @@ for(i in subbas_id){
    saveWidget(graph,paste(thread,"_Residuals ","_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".html", sep = ""))
  }
 setwd("../..")
+}
 
 ## monthly error in percent
 
@@ -86,6 +88,7 @@ colnames(error_percent) <- SubbasID_GaugeNumber[match(colnames(error_percent),Su
 error_percent$Date <- residual_monthly$Date
 error_percent <- error_percent[,c(ncol(error_percent),1:length(subbas_id))]
 
+if (saveplots){
 setwd(paste(thread, "/CaliResults", sep = "")) 
 for(i in colnames(error_percent[2:ncol(error_percent)])){
   Vis <- as.xts(error_percent[[i]],error_percent$Date)
@@ -93,6 +96,7 @@ for(i in colnames(error_percent[2:ncol(error_percent)])){
   saveWidget(graph,paste(thread,"_ResidualsPercent_",i,".html", sep = ""))
 }
 setwd("../..")
+}
 
 boxplot(error_percent[,c(2:(1+length(subbas_id)))], main = "Monthly error [%]", ylab = "error [%]")
 if (saveplots) savePlot(paste(thread,"/CaliResults/",thread," MonthlyErrorPercent_all.png", sep = ""), "png")
