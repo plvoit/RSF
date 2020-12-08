@@ -115,3 +115,23 @@ for ( i in 2:ncol(mean_month_err)){
 }
 
 
+
+########
+
+df <- data.frame("obs" = obs$`11`, "mod" = mod$`11`)
+
+graph <- as.xts(df,obs$Date)
+# initiate the dygraph
+graph <- dygraph(graph)%>%
+  # define the first axis
+  dyAxis(colnames(df)[1], name = "y", label = "m^3/s") %>%
+  
+  # plot the data
+  dySeries(colnames(df)[2] ,axis = 'y')%>%
+  dyOptions(colors = c("black","red")) %>%
+  dyLegend("onmouseover") %>%
+  dyRangeSelector()
+
+graph
+
+#saveWidget(graph,paste(thread,"_Residuals ","_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".html", sep = ""))

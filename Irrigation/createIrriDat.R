@@ -71,3 +71,7 @@ if (savefile){
   write.table(irridat,file =f, sep = "\t", row.names = FALSE, quote = FALSE)
   close(f)
 }
+
+# create according irri_seasons.dat
+
+
