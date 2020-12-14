@@ -46,7 +46,7 @@ if (T) #compute runoff coefficients -> only for time period with measured data i
   #read WASA simulation results # put the subbasins you want to look at in this vector
   #!!! The same needs to be done in line 261
   # subbas_id = c(10,11,12) #Zone 1
-  # subbas_id=c(78,73,15,16,90,58,96,45) #Zone2
+  # subbas_id=c(13,73,78,15,16,90,58,45,96) #Zone2
    subbas_id = c(1,2,3) #Zone3
   
   

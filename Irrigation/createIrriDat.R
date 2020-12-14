@@ -1,9 +1,14 @@
+## These script is for creating irri.dat and irri_seasons.dat.
+## ATTENTION: The created files have an additional blank line as last row which will cause WASA to crash
+## so far this line needs to be deleted manually
+
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 
 library(foreign)
 
 savefile = TRUE
+irri_seasons = TRUE
 
 Sub <- read.dbf("GIS/75subbas-neu/WGS8423S_for_meters/75Subbas_meters.dbf")
 Zone <- 1
@@ -61,7 +66,7 @@ int_ANA <- sum(seasonal_others$rate)
 
 
 # write new irri.dat
-irridat <- data.frame("sub_source" = Sub$DN, "source" = "river", "sub_receiver" = Sub$DN, "rule" = "fixed",
+irridat <- data.frame("sub_source" = Sub$DN, "source" = "river", "sub_receiver" = Sub$DN, "rule" = "seasonal",
                       "rate" = round(Sub$tot_withdr * 86400 * rate_factors[1],0), "rate2" = round(Sub$tot_withdr * 86400 * rate_factors[2],0), "rate3" = round(Sub$tot_withdr * 86400 * rate_factors[3],0),
                       "rate4" = round(Sub$tot_withdr * 86400 * rate_factors[4],0), loss_factor = round(df$efficency,2))
 
@@ -73,5 +78,18 @@ if (savefile){
 }
 
 # create according irri_seasons.dat
+
+df <- data.frame("subbasin_id" = irridat$sub_receiver, "year" = -1, DOY1 = seasonality_points[1], DOY2 = seasonality_points[2],
+                 DOY3 = seasonality_points[3], DOY4 = seasonality_points[4])
+
+if(irri_seasons){
+  
+  f <- file("irri_seasons.dat", "w")
+  writeLines("# Specification of the irrigation seasonality (per year)",f)
+  writeLines("# for the interpolation of temporal distribution irrigation water",f)
+  write.table(df,file =f, sep = "\t", row.names = FALSE, quote = FALSE)
+  close(f)
+}
+
 
 

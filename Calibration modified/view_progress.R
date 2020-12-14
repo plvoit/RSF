@@ -20,7 +20,7 @@ force_daily=TRUE #for hourly runs: force evaluation of performance measures in d
 setwd(base_dir)
 #runs2treat = dir(path = base_dir, pattern = "^A_u_1_sed_") #1 water
 
-runs2treat=
+runs2treat=   #put here at which run you want to look at
   c(
 "Test"
 
