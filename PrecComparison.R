@@ -40,4 +40,5 @@ for (i in 1:nrow(Sub_station)){
   res_vec[i] <- sum(res)
 }
 
- 
+names(res_vec) <- Sub_station[,1]
+res_vec
