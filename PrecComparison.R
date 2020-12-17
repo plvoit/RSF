@@ -1,4 +1,8 @@
+##This script is for comparing the subbasin precipitation input from ERA5 (the mean of the cells within the subbasin)
+## to rain gauge stations close by. A list was made that contains subbasins and their close by rain gauges ("SubbasinandClosePrecStations.txt")
+
 rm(list = ls())
+
 setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
 
