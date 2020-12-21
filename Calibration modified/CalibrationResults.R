@@ -1,7 +1,7 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/")
 
-thread <- "Test"  ## Check right subbas_id in line 11!
+thread <- "Zone3new"  ## Check right subbas_id in line 11!
 saveplots <- TRUE
 
 # load clearer names from CheckWASAoutput.R for later labelling the plots
@@ -10,8 +10,8 @@ SubbasID_GaugeNumber <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/S
 SubbasID_GaugeNumber$Gauges <- as.character(SubbasID_GaugeNumber$Gauges)
 
 #subbas_id = c("10","11","12") #Zone 1
- subbas_id=c("78","73","15","16","90","58","96","45") #Zone2
-#subbas_id = c("1","2","3") #Zone3
+#subbas_id=c("78","73","15","16","90","58","96","45") #Zone2
+subbas_id = c("1","2","3") #Zone3
 #subbas_id = c("12")
 
 obs <- read.delim(paste(thread,"/thread1_best/Input/Time_series/discharge_obs_24.txt", sep = "") , header= T, skip = 4, check.names  = F)

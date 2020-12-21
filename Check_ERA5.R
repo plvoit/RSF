@@ -167,9 +167,11 @@ Mmp_total
 
 plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", main = "Mean monthly precipitation")
 lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l")
-legend("topright", legend = c("Observed","Predicted"), col = c("black","red"), lty=1, cex=0.8)
+legend("topright", legend = c("Observed","ERA5"), col = c("black","red"), lty=1, cex=0.8)
 
 ### Die Vorhersage scheint den Niederschlag in der Trockenzeit zu über- und in der Regenzeit zu unterschätzen.
+sum(Mmp_total)
+sum(Mmo_total)
 
 ## how well fit both curves together. Sum of squares
 SumSq <- sum(Mmo_total[2] - Mmp_total[2])^2

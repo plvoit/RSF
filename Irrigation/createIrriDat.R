@@ -11,9 +11,9 @@ savefile = TRUE
 irri_seasons = TRUE
 
 Sub <- read.dbf("GIS/75subbas-neu/WGS8423S_for_meters/75Subbas_meters.dbf")
-Zone <- 1
+Zone <- 1   #Select Zone
 
-Sub <-  Sub[Sub$Zone == 1,]
+Sub <-  Sub[Sub$Zone == Zone,]
 
 ### this version has constant irrigation all year round
 
