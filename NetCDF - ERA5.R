@@ -14,7 +14,7 @@ library(raster)
 ## restulting in table wth station ID and coordinates. Will be used to extract from netcdf files
 
 stations <- read.csv("~/Workspace/RioSaoFrancisco/Data/xds_gerd/xds_gerd/brazil/meta.txt", comment.char="#")
-obs_complete <- read.csv("~/Workspace/RioSaoFrancisco/xds_gerd/xds_gerd/brazil/era5/P.csv", check.names = FALSE)
+obs_complete <- read.csv("~/Workspace/RioSaoFrancisco/Data/xds_gerd/xds_gerd/brazil/era5/P.csv", check.names = FALSE)
 obs_complete <- colnames(obs_complete[,4:ncol(obs_complete)])
 stations_new <- stations[stations$id %in% obs_complete,]
 stations_new <- stations_new[stations_new$varname == "precipitation",]

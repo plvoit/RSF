@@ -3,10 +3,10 @@
 #run best and uncalibrated parameter set
 
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia")
 
 library(ppso)
-base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration"
+base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia"
 
 sed=FALSE #consider sediments
 
@@ -22,7 +22,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-"Zone3new"
+"Test"
 
   )
 

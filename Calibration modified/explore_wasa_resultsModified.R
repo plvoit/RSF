@@ -7,7 +7,7 @@ wasa_input_dir =paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-S
 wasa_output_dir=paste("C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED/0","/Output/",sep="")
 
 run_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/WASA-SED"     #path/directory of the parametrisation folder, containing input/output files of your modelling example
-thread_dir="Zone3cal/"   #specifiy the directory (e.g., example1, tutorial, ...)
+thread_dir="Zone3new/"   #specifiy the directory (e.g., example1, tutorial, ...)
 
 #WARNING: the ORIGINAL source directory for the files is obtained from WASA-file parameter.out
 #this can be fixed by manually modifications near "#REPL"
