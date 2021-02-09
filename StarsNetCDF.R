@@ -28,7 +28,9 @@ extract_ncdf <- function(raster){
   return(r.mean)
 }
 
+## Dataframe to store the results
 DF <- data.frame()
+
 ptm <- proc.time()           #start timer for code block
 for (i in 1: length(all_files)){
 
@@ -75,6 +77,7 @@ DF <- rbind(DF,dummy)
 proc.time()-ptm   
 #Save workspace to save time for future runs
 #save.image(file = "workspace_StarsNetCDF.RData")
+load(file = "workspace_StarsNetCDF.RData")
 
 ## create date vector for dataframe ###!!!! this could be done more elegant as done in script getNCEP 
 start <- as.POSIXct("01.01.2000", format = c("%d.%m.%Y"), tz = "UTC")
@@ -91,7 +94,7 @@ naming_vector <- c("radiation")
 
 # change the order of columns and format the date
 input_list <- lapply(input_list, function(x) x <- x[,c("Date",names(x))])
-input_list <- lapply(input_list, function(x) { x["Date.1","999"] <- NULL; x })  # ,x within function seems to be the return value, otherwise you'd get nothing
+input_list <- lapply(input_list, function(x) { x["Date.1"] <- NULL; x })  # ,x within function seems to be the return value, otherwise you'd get nothing
 input_list <- lapply(input_list, function(x) {x [,"Date"] <- as.POSIXct(x[,"Date"], format = c("%Y-%m-%d")); x} )
 
 ## change the format of the date as it's wanted for WASA
@@ -102,7 +105,7 @@ input_list <- lapply(input_list, function(x) {x["No. of days"] <- 1:nrow(x) ; x 
 
 # change the order of the columns
 input_list <- lapply(input_list, function(x) x <- x[,c("Date","No. of days", names(x))])
-input_list <- lapply(input_list, function(x) { x[c("Date.1","No. of days.1")] <- NULL; x })
+input_list <- lapply(input_list, function(x) { x[c("Date.1","No. of days.1","999")] <- NULL; x })
 
 input_list <- lapply(input_list, function(x) {names(x)[c(1,2)] <- c("0","0"); x })
 
@@ -116,3 +119,4 @@ for (i in 1:length(input_list)){
   
 }
 ## still need to add header manually
+
