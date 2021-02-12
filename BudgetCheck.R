@@ -6,11 +6,11 @@ library(PaulsPack)
 
 vegetation <- read.csv("ResultsCalibration/Test/init_config/Input/Hillslope/vegetation.dat", sep="", skip = 1, header = T)
 
-prec <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF5/thread1_best/Input/Time_series/rain_daily.dat", sep="", skip = 2, header = T, check.names = F )
-act <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF5/thread1_best/Output/actetranspiration.out", sep="", skip = 1, header = T,check.names = F)
-pot <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF5/thread1_best/Output/potetranspiration.out", sep="", skip = 1, header = T,check.names = F)
-mod<- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF5/thread1_best/Output/river_Flow.out", quote="\"", comment.char="", skip = 1, header = T, check.names = F )
-obs <-  read.delim("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF5/init_config/Input/Time_series/discharge_obs_24.txt", header=T, skip = 4)
+prec <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4/thread1_best/Input/Time_series/rain_daily.dat", sep="", skip = 2, header = T, check.names = F )
+act <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4/thread1_best/Output/actetranspiration.out", sep="", skip = 1, header = T,check.names = F)
+pot <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4/thread1_best/Output/potetranspiration.out", sep="", skip = 1, header = T,check.names = F)
+mod<- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4/thread1_best/Output/river_Flow.out", quote="\"", comment.char="", skip = 1, header = T, check.names = F )
+obs <-  read.delim("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4/init_config/Input/Time_series/discharge_obs_24.txt", header=T, skip = 4)
 
 ## AREA Urucuia Subbasin [m2]
 area <- 23768011957

@@ -26,7 +26,7 @@ rm(list = ls())
 
 ## Sensitivity study on irrigation rate
 
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/SensRateF3")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/SensRateF4")
 
 factors <- c(seq(0.1,1,0.1),seq(2,10,1),seq(10,100,10))
 results_rate <-   data.frame("factor" = factors,"rmse_monthly" = 0, "rmse_qtotal" = 0, "NSE"=0)
