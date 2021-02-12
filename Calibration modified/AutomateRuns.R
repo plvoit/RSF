@@ -26,7 +26,7 @@ rm(list = ls())
 
 ## Sensitivity study on irrigation rate
 
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/SensRate")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/SensRateF3")
 
 factors <- c(seq(0.1,1,0.1),seq(2,10,1),seq(10,100,10))
 results_rate <-   data.frame("factor" = factors,"rmse_monthly" = 0, "rmse_qtotal" = 0, "NSE"=0)
@@ -34,7 +34,7 @@ results_rate <-   data.frame("factor" = factors,"rmse_monthly" = 0, "rmse_qtotal
 for (j in 1:length(factors)){
   unlink("thread1")
  # modify irri.dat, multiply rate by factor
-  irridat <- read.delim("../BaseLineOldIrriData/init_config/Input/Hillslope/irri.dat", comment.char="#")
+  irridat <- read.delim("../Old/BaseLineOldIrriData/init_config/Input/Hillslope/irri.dat", comment.char="#", skip = 1)
   irridat[,c(5:8)] <- irridat[,c(5:8)] * factors[j]
   f <- file("init_config/Input/Hillslope/irri.dat", "w")
   write("# Specification of irrigation operations",f)

@@ -22,8 +22,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-"Test"
-
+"RLAIF5"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)

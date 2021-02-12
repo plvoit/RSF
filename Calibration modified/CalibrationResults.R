@@ -1,7 +1,7 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia")
 
-thread <- "Test"  ## Check right subbas_id in line 11!
+thread <- "UrucuiaNoIrri"  ## Check right subbas_id in line 11!
 saveplots <- TRUE
 
 # load clearer names from CheckWASAoutput.R for later labelling the plots
