@@ -45,3 +45,22 @@ results <- read.delim("~/Workspace/RioSaoFrancisco/ResultsCalibration/Sensitivit
 plot(results$rmse_qtotal~results$factor, type = "l", col = "red", ylab = expression("RMSE Q"[total]* " [m"^3*"/s]"), xlab = "rate factor", cex.lab = 0.8 )
 points(results$rmse_qtotal~results$factor, col = "red", pch = 15)
 
+
+
+### For Tills Fit-script
+DF <- data.frame("doy" = seq(1,365,1), "Irri" = 0)
+DF$Irri <- c(rep(MonthlyIrri[1],Day[1]),
+             rep(MonthlyIrri[2],Day[2]),
+             rep(MonthlyIrri[3],Day[3]),
+             rep(MonthlyIrri[4],Day[4]),
+             rep(MonthlyIrri[5],Day[5]),
+             rep(MonthlyIrri[6],Day[6]),
+             rep(MonthlyIrri[7],Day[7]),
+             rep(MonthlyIrri[8],Day[8]),
+             rep(MonthlyIrri[9],Day[9]),
+             rep(MonthlyIrri[10],Day[10]),
+             rep(MonthlyIrri[11],Day[11]),
+             rep(MonthlyIrri[12],Day[12]))
+DF$Irri <- round(DF$Irri,0)
+
+write.table(DF,file ="Irri_season.dat", sep = "\t", row.names = FALSE, quote = FALSE)

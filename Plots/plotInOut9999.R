@@ -1,0 +1,14 @@
+In  <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/9999In/thread1/Output/River_Flow.out", quote="\"", comment.char="", skip = 1, header = T)
+Out <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/9999Out/thread1/Output/River_Flow.out", quote="\"", comment.char="", skip = 1, header = T)
+NoIrri  <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/NoIrri/thread1_best/Output/River_Flow.out", quote="\"", comment.char="", skip = 1, header = T)
+Obs <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/IrriZones/Zone1newIrri/thread1_best/Input/Time_series/discharge_obs_24.txt", sep="", skip = 4, header = T, check.names = F)
+Obs$Date <-  paste(Obs$YYYY,Obs$MM,Obs$DD, sep = "-")
+Obs$Date <- as.POSIXct(Obs$Date, format = c("%Y-%m-%d"))
+
+par(mar = c(5, 4, 4, 4))
+plot(In$X15~ Obs$Date, type = "l", ylim = c(0,3500), ylab = "", xlab = "Year", cex.lab = 0.9, cex.axis = 0.9)
+mtext(expression("Runoff [m" ^3*"/s]"), side = 2, line = 2, cex = 0.9)
+lines(Out$X15~Obs$Date, type = "l", col = "red" )
+lines(NoIrri$X15~Obs$Date, type = "l", col = "blue")
+legend("topright", legend = c("Input", "Output","No irrigation"), col = c("black", "red", "blue"), cex = 0.9,  lty=1)
+
