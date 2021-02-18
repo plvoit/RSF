@@ -6,16 +6,17 @@ seasonal <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/Sensitivi
 fixedOld <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/FixedOldData/thread1/Output/irrigation_abstraction.out", quote="\"", comment.char="", skip = 1, header = T)
 fixedNew <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/FixedNewData/thread1/Output/irrigation_abstraction.out", quote="\"", comment.char="", skip = 1, header = T)
 CWD <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/CWD/thread1/Output/irrigation_abstraction.out", quote="\"", comment.char="", skip = 1, header = T)
-
+CFcal <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/CFCalibrated/thread1/Output/irrigation_abstraction.out", quote="\"", comment.char="", skip = 1, header = T)
 # for date
 Obs <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/IrriZones/Zone1newIrri/thread1_best/Input/Time_series/discharge_obs_24.txt", sep="", skip = 4, header = T, check.names = F)
 Obs$Date <-  paste(Obs$YYYY,Obs$MM,Obs$DD, sep = "-")
 Obs$Date <- as.POSIXct(Obs$Date, format = c("%Y-%m-%d"))
 
 #plot(CWD$X15~Obs$Date, type = "l",  ylim = c(0,50000000))
-plot(seasonal$X15~Obs$Date,  type = "l", col = "chartreuse3", ylim = c(0,2600000), ylab = "", xlab = "Year")
+plot(CFcal$X15~Obs$Date, type = "l", ylab = "", xlab = "Year", col = "khaki1" )
+lines(seasonal$X15~Obs$Date,  type = "l", col = "chartreuse3", ylim = c(0,2600000))
 mtext(expression("abstracted irrigation water [m" ^3*"/d]"), side = 2, line = 2.5, cex = 1)
 lines(CWDadjusted$X15~Obs$Date, type = "l", col = "red")
 lines(fixedOld$X15~Obs$Date, type = "l", col = "blue")
 lines(fixedNew$X15~Obs$Date, type = "l", col = "blueviolet"  )
-legend("topright", legend = c("Fixed (municipality)", "Fixed (water use license)", "Seasonal", "CWD"), col = c("blue","blueviolet","chartreuse3","red"), pch = 15, cex = 0.8)
+legend("topright", legend = c("Fixed (municipality)", "Fixed (water use license)", "Seasonal (water use license)", "CWD (adjusted)","CWD (calibrated)"), col = c("blue","blueviolet","chartreuse3","red", "khaki1"), pch = 15, cex = 0.8)
