@@ -5,10 +5,11 @@ Obs <- read.csv("~/Workspace/RioSaoFrancisco/ResultsCalibration/IrriZones/Zone1n
 Obs$Date <-  paste(Obs$YYYY,Obs$MM,Obs$DD, sep = "-")
 Obs$Date <- as.POSIXct(Obs$Date, format = c("%Y-%m-%d"))
 
+png(file = "~/Workspace/RioSaoFrancisco/InOut9999.png", bg = "white", width = 2480, height = 1748, res = 300)
 par(mar = c(5, 4, 4, 4))
 plot(In$X15~ Obs$Date, type = "l", ylim = c(0,3500), ylab = "", xlab = "Year", cex.lab = 0.9, cex.axis = 0.9)
 mtext(expression("Runoff [m" ^3*"/s]"), side = 2, line = 2, cex = 0.9)
 lines(Out$X15~Obs$Date, type = "l", col = "red" )
 lines(NoIrri$X15~Obs$Date, type = "l", col = "blue")
 legend("topright", legend = c("Input", "Output","No irrigation"), col = c("black", "red", "blue"), cex = 0.9,  lty=1)
-
+dev.off()

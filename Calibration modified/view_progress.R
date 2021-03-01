@@ -3,10 +3,10 @@
 #run best and uncalibrated parameter set
 
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Mod")
 
 library(ppso)
-base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia"
+base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/Mod"
 
 sed=FALSE #consider sediments
 
@@ -22,7 +22,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-"RLAIF4"
+"ModZ1"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)

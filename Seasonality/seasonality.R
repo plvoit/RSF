@@ -113,7 +113,7 @@ irridata[365,4] <- 796446.9
 
 irridata$Fit <- na.approx(irridata$Fit)
 
-  
+png(file = "~/Workspace/RioSaoFrancisco/SeasonalIrrigationUrucuia.png", bg = "white", width = 2480, height = 1748, res = 300)
 plot(irridata$Irri, type = "l", ylim = (c(0,2200000)), xlab = "DOY", ylab = "", cex.lab = 1 )
 polygon_x <- c(min(irridata$doy), irridata$doy, max(irridata$doy))
 polygon_y <- c(0, irridata$Irri,0)
@@ -124,3 +124,4 @@ segments(Day, 0, Day, Rate)
 mtext(expression("Irrigation water [m" ^3*"/d]"),side = 2, line = 2, cex = 1)
 lines(irridata$Fit, type = "l", col = "red", lwd = 2)
 legend("topright", legend = c("Seasonal irrigation", "WASA approximation"), col = c("dodgerblue", "red"), cex = 0.9, lty = 1)
+dev.off()

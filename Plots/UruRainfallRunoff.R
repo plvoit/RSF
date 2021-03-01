@@ -11,7 +11,7 @@ UruObs$Date <- as.POSIXct(UruObs$Date, format = c("%Y-%m-%d"))
 
 Uru <- data.frame("Date" = UruObs$Date, "Obs" = UruObs$X15, "Mod" = UruMod$X15, "Prec" = Prec$X15)
 
-
+png(file = "~/Workspace/RioSaoFrancisco/UrucuiaRainfallRunoff.png", bg = "white", width = 2480, height = 1748, res = 300)
 par(mai = c(1, 1, 1, 1))
 barplot(Uru$Prec, ylim = rev(c(0,120)), yaxt = "n", col = rep( "dodgerblue", length(Uru$Prec)), border = "dodgerblue")
 mtext("Precipitation [mm]", 4, line = 3, cex = 0.8)
@@ -24,21 +24,22 @@ lines(UruVEG$X15~Uru$Date, type = "l", col = "green")
 lines(Uru$Obs~Uru$Date, type = "l")
 legend("right", legend = c("Modelled", "Observed","Precipitation","Mod. (modified)"), col = c("red", "black", "blue","green"), cex = 0.8,  pch=15)
 box(bty = "7", lwd = 2)
-
-
+dev.off()
 
 ETpot <- read.csv("SensitivityUrucuia/UrucuiaNoIrri/thread1_best/Output/daily_potetranspiration.out", sep="", skip = 1, header = T)
 ETact<- read.csv("SensitivityUrucuia/UrucuiaNoIrri/thread1_best/Output/daily_actetranspiration.out", sep="", skip = 1, header = T)
 
+png(file = "~/Workspace/RioSaoFrancisco/ETUru.png", bg = "white", width = 2480, height = 1748, res = 300)
 plot(ETpot$X15~Uru$Date, type = "l", xlab = "Year", ylab = "[mm]", ylim = c(0,13), cex.axis = 0.8, cex.lab = 0.8)
 lines(ETact$X15~Uru$Date, type = "l", col = "red")
 legend("topright", legend = c(expression("ET"[act]),expression("ET"[pot])), col = c("red","black"), cex = 0.8, lty = 1)
 box()
-
+dev.off()
 
 ### plot with best irrigation module
 Irri <- read.table("~/Workspace/RioSaoFrancisco/ResultsCalibration/SensitivityUrucuia/RLAIF4Folder/CFCalibrated/thread1/Output/River_Flow.out", quote="\"", comment.char="", skip = 1, header = T)
 
+png(file = "~/Workspace/RioSaoFrancisco/UruIrri.png", bg = "white", width = 2480, height = 1748, res = 300)
 par(mai = c(1, 1, 1, 1))
 barplot(Uru$Prec, ylim = rev(c(0,120)), yaxt = "n", col = rep( "dodgerblue", length(Uru$Prec)), border = "dodgerblue")
 mtext("Precipitation [mm]", 4, line = 3, cex = 0.8)
@@ -52,3 +53,4 @@ lines(Irri$X15~Uru$Date, type = "l", col = "green")
 lines(Uru$Obs~Uru$Date, type = "l", col = "black")
 legend("right", legend = c("Mod. (no irrigation)", "Observed","Precipitation","Mod. (irrigation)"), col = c("red", "black", "blue","green"), cex = 0.8,  pch=15)
 box(bty = "7", lwd = 2)
+dev.off()
