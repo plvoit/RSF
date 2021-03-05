@@ -94,8 +94,8 @@ for (infile in infiles)
 library(zoo)
 
 #for segments
-Day <-  c(31,59,90,120,151,181,212,242,272,303,333,364)
-Rate <- c(1114997,961457,1258302,2056624,2035881,1724569,2001414,1900849,1539738,1059646,740547,800094)
+Day <-  c(1,31,59,90,120,151,181,212,243,273,304,334,365)
+Rate <- c(1114997,1114997,961457,1258302,2056624,2035881,1724569,2001414,1900849,1539738,1059646,740547,800094)
 
 
 irridata <-  laidata
@@ -114,11 +114,11 @@ irridata[365,4] <- 796446.9
 irridata$Fit <- na.approx(irridata$Fit)
 
 png(file = "~/Workspace/RioSaoFrancisco/SeasonalIrrigationUrucuia.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(irridata$Irri, type = "l", ylim = (c(0,2200000)), xlab = "DOY", ylab = "", cex.lab = 1 )
-polygon_x <- c(min(irridata$doy), irridata$doy, max(irridata$doy))
-polygon_y <- c(0, irridata$Irri,0)
-polygon_points <- list(x = polygon_x, y = polygon_y)
-polygon(polygon_points, col = "dodgerblue")
+plot(irridata$Irri, type = "h", ylim = (c(0,2200000)), xlab = "DOY", ylab = "", cex.lab = 1, col = "dodgerblue", lwd = 2)
+#polygon_x <- c(min(irridata$doy), irridata$doy, max(irridata$doy))
+#polygon_y <- c(0, irridata$Irri,0)
+#polygon_points <- list(x = polygon_x, y = polygon_y)
+#polygon(polygon_points, col = "dodgerblue")
 
 segments(Day, 0, Day, Rate) 
 mtext(expression("Irrigation water [m" ^3*"/d]"),side = 2, line = 2, cex = 1)

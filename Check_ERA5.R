@@ -164,10 +164,12 @@ Mmp_total <- as.data.frame(cbind(Monthly_era$Month, Mmp_total))
 names(Mmp_total)[1] <- "Month"
 Mmp_total
 
-
+png(file = "~/Workspace/RioSaoFrancisco/ERA5_PobsMMP.png", bg = "white", width = 2480, height = 1748, res = 300)
 plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", main = "Mean monthly precipitation")
 lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l")
 legend("topright", legend = c("Observed","ERA5"), col = c("black","red"), lty=1, cex=0.8)
+png(file = "~/Workspace/RioSaoFrancisco/EpvsNSE.png", bg = "white", width = 2480, height = 1748, res = 300)
+dev.off()
 
 ### Die Vorhersage scheint den Niederschlag in der Trockenzeit zu über- und in der Regenzeit zu unterschätzen.
 sum(Mmp_total)

@@ -47,10 +47,12 @@ res_sum$modelPerformance <- c(-0.11,-0.11,-0.11,0.48,0.48,-0.6,0.195,-0.43,-0.61
 
 res_sum <- res_sum[-3,]
 
-plot(res_sum$res_sum ~ res_sum$modelPerformance, ylab = expression("e"[p]*" mm"),xlab = "Model performance NSE", main = expression("e"^p*" ~ NSE" ))
+png(file = "~/Workspace/RioSaoFrancisco/EpvsNSE.png", bg = "white", width = 2480, height = 1748, res = 300)
+plot(res_sum$res_sum ~ res_sum$modelPerformance, ylab = expression("e"[p]*" [mm]"),xlab = "Model performance NSE [-]", main = expression("e"^p*" ~ NSE" ))
 linmod <- lm(res_sum$res_sum ~ res_sum$modelPerformance)
 abline(1783.9,-304.8, lty = "dashed", col = "red")
 mtext("y = 1783.9 - 304.8 * x \n p = 0.82", line = -5)
+dev.off()
 
 summary(linmod)
 

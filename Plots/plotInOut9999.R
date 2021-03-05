@@ -11,5 +11,5 @@ plot(In$X15~ Obs$Date, type = "l", ylim = c(0,3500), ylab = "", xlab = "Year", c
 mtext(expression("Runoff [m" ^3*"/s]"), side = 2, line = 2, cex = 0.9)
 lines(Out$X15~Obs$Date, type = "l", col = "red" )
 lines(NoIrri$X15~Obs$Date, type = "l", col = "blue")
-legend("topright", legend = c("Input", "Output","No irrigation"), col = c("black", "red", "blue"), cex = 0.9,  lty=1)
+legend("topright", legend = c("Irrigation from ext. source", "Abstraction","No irrigation"), col = c("black", "red", "blue"), cex = 0.9,  lty=1)
 dev.off()

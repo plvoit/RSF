@@ -20,5 +20,5 @@ mtext(expression("abstracted irrigation water [m" ^3*"/d]"), side = 2, line = 2.
 lines(CWDadjusted$X15~Obs$Date, type = "l", col = "red")
 lines(fixedOld$X15~Obs$Date, type = "l", col = "blue")
 lines(fixedNew$X15~Obs$Date, type = "l", col = "blueviolet"  )
-legend("topright", legend = c("Fixed (municipality)", "Fixed (water use license)", "Seasonal (water use license)", "CWD (adjusted)","CWD (calibrated)"), col = c("blue","blueviolet","chartreuse3","red", "khaki1"), pch = 15, cex = 0.8)
+legend("topright", legend = c("Fixed (municipality)", "Fixed (water use license)", "Seasonal (water use license)", "cwd (adjusted)","cwd (calibrated)"), col = c("blue","blueviolet","chartreuse3","red", "khaki1"), pch = 15, cex = 0.8)
 dev.off()
