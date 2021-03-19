@@ -22,7 +22,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-"ModZ1"
+"Test"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)
