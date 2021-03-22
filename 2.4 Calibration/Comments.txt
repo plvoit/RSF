@@ -1,0 +1,2 @@
+The sets of script used for eacch WASA-RUN can be found in the respective Folders 5.1 and 5.2.
+These scripts were provided by Dr.Till Francke and modified by Paul Voit
