@@ -30,7 +30,7 @@ ETpot <- read.csv("SensitivityUrucuia/UrucuiaNoIrri/thread1_best/Output/daily_po
 ETact<- read.csv("SensitivityUrucuia/UrucuiaNoIrri/thread1_best/Output/daily_actetranspiration.out", sep="", skip = 1, header = T)
 
 png(file = "~/Workspace/RioSaoFrancisco/ETUru.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(ETpot$X15~Uru$Date, type = "l", xlab = "Year", ylab = "[mm]", ylim = c(0,13), cex.axis = 0.8, cex.lab = 0.8)
+plot(ETpot$X15~Uru$Date, type = "l", xlab = "Year", ylab = "[mm/d]", ylim = c(0,13), cex.axis = 0.8, cex.lab = 0.8)
 lines(ETact$X15~Uru$Date, type = "l", col = "red")
 legend("topright", legend = c(expression("ET"[act]),expression("ET"[pot])), col = c("red","black"), cex = 0.8, lty = 1)
 box()

@@ -38,7 +38,7 @@ for (i in subbas_id){
 
 i = "90"
 png(file = "~/Workspace/RioSaoFrancisco/IrriNoIrri.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(mod_noirri[[i]]~obs$Date, type = "l", col = "red",xlab = "Year", ylab = "m3/s")
+plot(mod_noirri[[i]]~obs$Date, type = "l", col = "red",xlab = "Year", ylab = "m3/s", ylim = c(0,12000))
 lines(obs[[i]]~obs$Date, type = "l")
 lines(mod_irri[[i]]~obs$Date, type = "l", col = "green")
 legend("topright", legend= c("observed", "modeled (no irrigation)","modeled (irrigation)"),col = c("black","red", "green"), lty=1, cex=0.8)
