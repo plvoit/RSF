@@ -4,7 +4,7 @@
 # input: ASCI-file (infile) with columns of observations for many days in the year (see "seasonal_data.txt")
 # output: linear piecewise fit (breakpoints and intercepts) written to seg_fit_coeffs.txt
 
-  #infile="seasonal_data.txt" #input file
+#  infile="Irri_season.dat" #input file
   
   
 #   infile="seasonal_data_Cfactor-shrubland.txt" #input file
@@ -22,6 +22,7 @@ windows()
 for (infile in infiles)  
 {  
   set.seed(1) #for reproducable results
+  ### Left the code with "laidata" even though we're dealing with irrigation data now
   laidata = read.table(file=infile, sep="\t", header=TRUE)
   
   #compute weights of points based on their density (in time)
@@ -91,38 +92,38 @@ for (infile in infiles)
   
 
 
-### Make a nicer plot
-library(zoo)
-
-#for segments
-Day <-  c(1,31,59,90,120,151,181,212,243,273,304,334,365)
-Rate <- c(1114997,1114997,961457,1258302,2056624,2035881,1724569,2001414,1900849,1539738,1059646,740547,800094)
-
-
-irridata <-  laidata
-irridata$Fit <- NA
-
-result <- read.delim("~/Workspace/RioSaoFrancisco/RSF/Seasonality/seg_fit_coeffs.txt")
-result[,c(2:5)] <- round(result[,c(2:5)],0)
-
-irridata[1,4] <- 805830.8
-irridata[result$doy1,4] <- result$ic4
-irridata[result$doy2,4] <- result$ic3
-irridata[result$doy3,4] <- result$ic1
-irridata[result$doy4,4] <- result$ic2
-irridata[365,4] <- 796446.9
-
-irridata$Fit <- na.approx(irridata$Fit)
-
-png(file = "~/Workspace/RioSaoFrancisco/SeasonalIrrigationUrucuia.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(irridata$Irri, type = "h", ylim = (c(0,2200000)), xlab = "DOY", ylab = "", cex.lab = 1, col = "dodgerblue", lwd = 2)
-#polygon_x <- c(min(irridata$doy), irridata$doy, max(irridata$doy))
-#polygon_y <- c(0, irridata$Irri,0)
-#polygon_points <- list(x = polygon_x, y = polygon_y)
-#polygon(polygon_points, col = "dodgerblue")
-
-segments(Day, 0, Day, Rate) 
-mtext(expression("Irrigation water [m" ^3*"/d]"),side = 2, line = 2, cex = 1)
-lines(irridata$Fit, type = "l", col = "red", lwd = 2)
-legend("topright", legend = c("Seasonal irrigation", "WASA approximation"), col = c("dodgerblue", "red"), cex = 0.9, lty = 1)
-dev.off()
+# ### Make a nicer plot
+# library(zoo)
+# 
+# #for segments
+# Day <-  c(1,31,59,90,120,151,181,212,243,273,304,334,365)
+# Rate <- c(1114997,1114997,961457,1258302,2056624,2035881,1724569,2001414,1900849,1539738,1059646,740547,800094)
+# 
+# 
+# irridata <-  laidata
+# irridata$Fit <- NA
+# 
+# result <- read.delim("~/Workspace/RioSaoFrancisco/RSF/Seasonality/seg_fit_coeffs.txt")
+# result[,c(2:5)] <- round(result[,c(2:5)],0)
+# 
+# irridata[1,4] <- 805830.8
+# irridata[result$doy1,4] <- result$ic4
+# irridata[result$doy2,4] <- result$ic3
+# irridata[result$doy3,4] <- result$ic1
+# irridata[result$doy4,4] <- result$ic2
+# irridata[365,4] <- 796446.9
+# 
+# irridata$Fit <- na.approx(irridata$Fit)
+# 
+# png(file = "~/Workspace/RioSaoFrancisco/SeasonalIrrigationUrucuia.png", bg = "white", width = 2480, height = 1748, res = 300)
+# plot(irridata$Irri, type = "h", ylim = (c(0,2200000)), xlab = "DOY", ylab = "", cex.lab = 1, col = "dodgerblue", lwd = 2)
+# #polygon_x <- c(min(irridata$doy), irridata$doy, max(irridata$doy))
+# #polygon_y <- c(0, irridata$Irri,0)
+# #polygon_points <- list(x = polygon_x, y = polygon_y)
+# #polygon(polygon_points, col = "dodgerblue")
+# 
+# segments(Day, 0, Day, Rate) 
+# mtext(expression("Irrigation water [m" ^3*"/d]"),side = 2, line = 2, cex = 1)
+# lines(irridata$Fit, type = "l", col = "red", lwd = 2)
+# legend("topright", legend = c("Seasonal irrigation", "WASA approximation"), col = c("dodgerblue", "red"), cex = 0.9, lty = 1)
+# dev.off()

@@ -41,9 +41,9 @@ modified_K = function(Pmax,Amax) {
   return(2.55 * 10^3 + (6.45 * 10^1)*lambda - 5.38*10^1*(D/lambda))
 }
 
-summary(lakes@data$nuvolumhm3)
-summary(lakes@data$nuperimkm)
-summary(lakes@data$nuareakm2)
+#summary(lakes@data$nuvolumhm3)
+#summary(lakes@data$nuperimkm)
+#summary(lakes@data$nuareakm2)
 
 
 for (i in 1:nrow(lakes@data)){
@@ -74,7 +74,7 @@ lakes <- lakes[lakes@data$nuvolumhm3 > 0,]
 
 # just keep necessary columns
 
-lakes@data <- lakes@data[,c(5,18:23)]
+lakes@data <- lakes@data[,c(5,18:23,52,53)]
 
 # for visual inspection
 #hist(lakes@data[lakes@data$nuvolumhm3 > 1.2 & lakes@data$nuvolumhm3 < 15,"nuvolumhm3"], breaks = 20)
@@ -85,6 +85,7 @@ lakes@data <- lakes@data[,c(5,18:23)]
 # 0.3-1.2 1742 elements
 #1.2-15 608 elements
 # 15 -....  ~  80 elements
+
 
 
 ## add class information
@@ -113,26 +114,54 @@ DF[is.na(DF)] <- 0
 table(dummy$Reservoir_Class)[1]
 plot(subbasins[2])
 
+
+## Add here mean alpha and mean K
 # calculate mean lake volume for each class:
 
 Mean_volume <- data.frame("Class_1" = 0, "Class_2" = 0,"Class_3" = 0,"Class_4" = 0,"Class_5" = 0 )
 for (i in 1:5){
   dummy <- lakes@data[lakes@data$Reservoir_Class == i,]
   Mean_volume[1,i] <- mean(dummy$nuvolumhm3)
+  Mean_volume[2,i] <- mean(dummy$mod_alpha)
+  Mean_volume[3,i] <- mean(dummy$mod_k)
 }
 
 
-hist(test@data[,"nuvolumhm3"], breaks = 200)
+#hist(test@data[,"nuvolumhm3"], breaks = 200)
 
-sub_lakes <-  list()
+# write lake_number.dat
+#The order of the sub-basins in the first column has to follow the same order of the sub-basin IDs as was used in hymo.dat
+#load hymo.dat
 
-for (i in 1:length(subbasins$DN)){
-  basin <- subbasins[subbasins$DN == subbasins$DN[i],]
-  dummy <- lakes[basin,]
-  sub_lakes[[i]] <- dummy@data[,c(18,20,21,23)]
-  sub_lakes[[i]]$ID <- as.character(subbasins$DN[i])
-}
+hymo <- c(11,86,12,10,87,85,9,83,82,80,79,75,74,88,81,73,13,78,71,76,66,65,15,93,92,91,69,16,90,94,63,61,60,59,51,50,48,58,55,
+49,46,44,95,56,45,40,96,41,97,52,98,37,35,99,36,4,100,33,101,32,30,31,28,26,25,105,104,103,3,106,19,2,107,18,1)
+
+DF <- DF[ order(match(DF$Subbasin,hymo)), ]
+
+#write lake_number.dat # adds one blank line add the end that has to be deleted manually
+f <- file("lake_number.dat", "w")
+writeLines("# Specification of total number of reservoirs in the size classes",f)
+writeLines("Sub-basin-ID, acud[-] (five reservoir size classes)",f)
+write.table(DF,file =f, sep = "\t", row.names = FALSE, quote = FALSE,col.names = F)
+close(f)
 
 
-dummyShape <- subset(subbasins, DN == "2")
-plot(dummyShape)
+#lake.dat
+
+Mean_volume <- t(Mean_volume)
+Mean_volume <- as.data.frame(Mean_volume)
+names(Mean_volume) <- c("maxlake0[m**3]","alpha_Molle[-]", "damk_Molle[-]")
+Mean_volume["Reservoir_class-ID"] <- c(1,2,3,4,5)
+Mean_volume["lake_vol0_factor[-]"] <-  0.2
+Mean_volume["lake_change[-]"] <- 0
+Mean_volume["damc_hrr[-]"] <- c(7,14,21,28,35)
+Mean_volume["damd_hrr[-]"] <-  1.5
+Mean_volume <- Mean_volume[,c(4,1,5,6,2,3,7,8)]
+Mean_volume <- round(Mean_volume,2)
+
+# adds one blank line add the end that has to be deleted manually
+f <- file("lake.dat", "w")
+writeLines("# Specification of parameters for the reservoir size classes",f)
+writeLines("# Reservoir_class-ID, maxlake0[m**3], lake_vol0_factor[-], lake_change[-], alpha_Molle[-], damk_Molle[-], damc_hrr[-], damd_hrr[-]",f)
+write.table(Mean_volume,file =f, sep = "\t", row.names = FALSE, quote = FALSE, col.names = F)
+close(f)
