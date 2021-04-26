@@ -117,29 +117,80 @@ for( i in 1:nrow(subbasins@data)){
   
 }
 
-##########################
-# Seasonality from monthly data
-MonthlyIrri <- river_irri[2,2:ncol(river_irri)]
+# ##########################
+# # Seasonality from monthly data
+# Day <-  c(31,28,31,30,31,30,31,31,30,31,30,31)
+# DF <- data.frame("doy" = seq(1,365,1), "Irri" = 0)
+# 
+# for ( i in 1:nrow(acude_irri)){
+#   
+#   MonthlyIrri <- acude_irri[i,2:ncol(acude_irri)]
+# 
+#   ## create ASCI-Input file for seasonality script
+# 
+#   DF$Irri <- c(rep(MonthlyIrri[1,1],Day[1]),
+#              rep(MonthlyIrri[1,2],Day[2]),
+#              rep(MonthlyIrri[1,3],Day[3]),
+#              rep(MonthlyIrri[1,4],Day[4]),
+#              rep(MonthlyIrri[1,5],Day[5]),
+#              rep(MonthlyIrri[1,6],Day[6]),
+#              rep(MonthlyIrri[1,7],Day[7]),
+#              rep(MonthlyIrri[1,8],Day[8]),
+#              rep(MonthlyIrri[1,9],Day[9]),
+#              rep(MonthlyIrri[1,10],Day[10]),
+#              rep(MonthlyIrri[1,11],Day[11]),
+#              rep(MonthlyIrri[1,12],Day[12]))
+#   DF$Irri <- round(DF$Irri,0)
+# 
+# #setwd("RSF/3.3 Irrigation Data")
+# write.table(DF,file =paste("Seasonality/Data/Acudes/Irri_season_Sub",river_irri$Subbasin[i],".txt", sep = ""), sep = "\t", row.names = FALSE, quote = FALSE)
+# }
+#plot(DF$Irri)
+#source("seasonality.R",chdir = TRUE)
 
-## create ASCI-Input file for seasonality script
 Day <-  c(31,28,31,30,31,30,31,31,30,31,30,31)
-
 DF <- data.frame("doy" = seq(1,365,1), "Irri" = 0)
-DF$Irri <- c(rep(MonthlyIrri[1,1],Day[1]),
-             rep(MonthlyIrri[1,2],Day[2]),
-             rep(MonthlyIrri[1,3],Day[3]),
-             rep(MonthlyIrri[1,4],Day[4]),
-             rep(MonthlyIrri[1,5],Day[5]),
-             rep(MonthlyIrri[1,6],Day[6]),
-             rep(MonthlyIrri[1,7],Day[7]),
-             rep(MonthlyIrri[1,8],Day[8]),
-             rep(MonthlyIrri[1,9],Day[9]),
-             rep(MonthlyIrri[1,10],Day[10]),
-             rep(MonthlyIrri[1,11],Day[11]),
-             rep(MonthlyIrri[1,12],Day[12]))
-DF$Irri <- round(DF$Irri,0)
 
-setwd("RSF/3.3 Irrigation Data")
-write.table(DF,file ="Irri_season.dat", sep = "\t", row.names = FALSE, quote = FALSE)
+i= "107"
 
-source("seasonality.R",chdir = TRUE)
+  MonthlyIrri <- acude_irri[acude_irri$Subbasin == i,c(2:13) ]
+  
+  ## create ASCI-Input file for seasonality script
+  
+  DF$Irri <- c(rep(MonthlyIrri[1,1],Day[1]),
+               rep(MonthlyIrri[1,2],Day[2]),
+               rep(MonthlyIrri[1,3],Day[3]),
+               rep(MonthlyIrri[1,4],Day[4]),
+               rep(MonthlyIrri[1,5],Day[5]),
+               rep(MonthlyIrri[1,6],Day[6]),
+               rep(MonthlyIrri[1,7],Day[7]),
+               rep(MonthlyIrri[1,8],Day[8]),
+               rep(MonthlyIrri[1,9],Day[9]),
+               rep(MonthlyIrri[1,10],Day[10]),
+               rep(MonthlyIrri[1,11],Day[11]),
+               rep(MonthlyIrri[1,12],Day[12]))
+  DF$Irri <- round(DF$Irri,0)
+
+plot(DF$Irri, ylim = c(0,max(DF$Irri)+500) )
+rowMeans(acude_irri[acude_irri$Subbasin == i,c(2:13) ])
+
+#Manually add Points for seasonality
+library("zoo")
+DOY <- c(32,135,210,310)
+DF$Approx <- 0
+DF$Approx[DOY] <- DF$Irri[DOY]
+
+# calculate Rate at first and last day of year by connecting first DOY and last DOy (linear)
+dx <- DOY[1] + 365 - DOY[4]
+dy <- DF$Irri[DOY[1]] - DF$Irri[DOY[4]]
+slope <- dy/dx
+intercept <- DF$Irri[DOY[4]] + slope * (365 - DOY[4])
+DF$Approx[c(1,365)] <- intercept
+
+DF[DF$Approx == 0,3] <- NA
+DF$Approx <- na.approx(DF$Approx)
+plot(DF$Irri, ylim = c(0,max(DF$Irri)+500) )
+lines(DF$Approx, col = "red", lwd = 3)
+DF$Approx[DOY]
+
+
