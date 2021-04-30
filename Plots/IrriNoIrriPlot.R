@@ -1,9 +1,9 @@
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/IrriZones")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration//SensitivityUrucuia/RLAIF4Folder/")
 
-thread <- "Zone2newIrri"  ## Check right subbas_id in line 11!
+thread <- "CFCalibrated"  ## Check right subbas_id in line 11!
 saveplots <- T
-noirri_thread <- "../NoIrriZones/Zone2new"
+noirri_thread <- "NoIrri"
 # load clearer names from CheckWASAoutput.R for later labelling the plots
 # load GaugeNumber-SubbasID file
 SubbasID_GaugeNumber <- read.csv("~/Workspace/RioSaoFrancisco/Data/Runoff-data/SubbasID_GaugeNumber.txt")
@@ -15,12 +15,12 @@ subbas_id=c("78","73","15","16","90","58","96","45") #Zone2
 #subbas_id = c("15")
 
 
-obs <- read.delim(paste(thread,"/thread1_best/Input/Time_series/discharge_obs_24.txt", sep = "") , header= T, skip = 4, check.names  = F)
-mod_irri <- read.table(paste(thread,"/thread1_best/Output/River_Flow.out", sep = ""), quote="\"", comment.char="", skip = 1, header = T, check.names = F)
+obs <- read.delim(paste(thread,"/thread1/Input/Time_series/discharge_obs_24.txt", sep = "") , header= T, skip = 4, check.names  = F)
+mod_irri <- read.table(paste(thread,"/thread1/Output/River_Flow.out", sep = ""), quote="\"", comment.char="", skip = 1, header = T, check.names = F)
 mod_noirri <- read.table(paste(noirri_thread,"/thread1_best/Output/River_Flow.out", sep = ""), quote="\"", comment.char="", skip = 1, header = T, check.names = F)
 
 obs <- obs[,c(1:4, match(subbas_id,colnames(obs)))]
-mod_irri <- mod_irri[,c(1:4, match(subbas_id,colnames(mod_irri)))]
+mod_irri <- mod_irri[,c(1,2, match(subbas_id,colnames(mod_irri)))]
 mod_noirri <- mod_noirri[,c(1,2,match(subbas_id,colnames(mod_noirri)))]
 
 obs$Date <-  paste(obs$YYYY,obs$MM,obs$DD, sep = "-")
@@ -36,11 +36,13 @@ for (i in subbas_id){
   if (saveplots) savePlot(paste("IrriNoIrri_",SubbasID_GaugeNumber[match(i,SubbasID_GaugeNumber$Subbas_ID),3],".png", sep = ""), "png")
 }
 
-i = "90"
-png(file = "~/Workspace/RioSaoFrancisco/IrriNoIrri.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(mod_noirri[[i]]~obs$Date, type = "l", col = "red",xlab = "Year", ylab = "m3/s", ylim = c(0,12000))
-lines(obs[[i]]~obs$Date, type = "l")
-lines(mod_irri[[i]]~obs$Date, type = "l", col = "green")
+
+for( i in 3:ncol(mod_noirri)){
+png(file = paste0("~/Workspace/RioSaoFrancisco/IrriNoIrri",names(mod_irri)[i], ".png"), bg = "white", width = 2480, height = 1748, res = 300)
+plot(mod_noirri[,i]~obs$Date, type = "l", col = "red",xlab = "Year", ylab = "discharge m3/s", ylim = c(0,max(c(mod_noirri[,i],mod_irri[,i]))),
+     main = paste0(SubbasID_GaugeNumber[match(names(mod_irri)[i],SubbasID_GaugeNumber[,2]),1]," - ", SubbasID_GaugeNumber[match(names(mod_irri)[i],SubbasID_GaugeNumber[,2]),3] ))
+lines(obs[,i + 2]~obs$Date, type = "l")
+lines(mod_irri[,i]~obs$Date, type = "l", col = "green")
 legend("topright", legend= c("observed", "modeled (no irrigation)","modeled (irrigation)"),col = c("black","red", "green"), lty=1, cex=0.8)
 dev.off()
-
+}
