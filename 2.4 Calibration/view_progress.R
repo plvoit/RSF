@@ -7,10 +7,10 @@
 # Copyright (C) Dr. Till Francke
 
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Mod")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
 
 library(ppso)
-base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/Mod"
+base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/Paper"
 
 sed=FALSE #consider sediments
 
@@ -26,7 +26,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-    "AllZ3"
+    "GrandeBedrock"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)
