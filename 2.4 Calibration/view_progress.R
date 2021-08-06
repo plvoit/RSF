@@ -26,7 +26,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-    "GrandeBedrock"
+    "Z2Alluv"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)

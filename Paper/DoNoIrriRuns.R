@@ -3,20 +3,21 @@ setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
 
 runs <- list.dirs(recursive = F, full.names = T)
 runs <-  runs[1:length(runs)-1]
+runs <- runs[8]
 # 
-# for( i in runs){
-#   setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
-#   setwd(i)
-#   #remove the do.dat and put the one that has irrigation = F, add paramset.txt
-#   # to run testwrapper.R (wasa with warmup)
-#   file.remove('init_config/Input/do.dat')
-#   file.copy('../do.dat','init_config/Input')
-#   file.copy('thread1_best/paramset.txt', 'init_config')
-#   source('test_wrapper.R')
-#   file.rename('thread1','NoIrri')
-#   }
-# 
-i = 'GrandeAlluv'
+for( i in runs){
+  setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
+  setwd(i)
+  #remove the do.dat and put the one that has irrigation = F, add paramset.txt
+  # to run testwrapper.R (wasa with warmup)
+  file.remove('init_config/Input/do.dat')
+  file.copy('../do.dat','init_config/Input')
+  file.copy('thread1_best/paramset.txt', 'init_config')
+  source('test_wrapper.R')
+  file.rename('thread1','NoIrri')
+  }
+
+
 for(i in runs){
   setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
   setwd(i)
