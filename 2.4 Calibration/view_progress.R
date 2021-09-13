@@ -7,10 +7,10 @@
 # Copyright (C) Dr. Till Francke
 
 rm(list = ls())
-setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper")
+setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper/NewExe")
 
 library(ppso)
-base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/Paper"
+base_dir="C:/Users/Admin/Documents/Workspace/RioSaoFrancisco/ResultsCalibration/Paper/NewExe"
 
 sed=FALSE #consider sediments
 
@@ -26,7 +26,7 @@ setwd(base_dir)
 
 runs2treat=   #put here at which run you want to look at
   c(
-    "Z2Alluv"
+    "Uru2IrriCal"
   )
 
 subs_runs = commandArgs(trailingOnly=TRUE)

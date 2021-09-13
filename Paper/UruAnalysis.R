@@ -1,7 +1,7 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 library(PaulsPack)
-##test
+
 
 ## Mean Prec from Gerds Station (ID 300)
 P <- read.csv("Data/xds_gerd/xds_gerd/brazil/obs/P.csv", check.names = F)
