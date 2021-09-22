@@ -2,12 +2,12 @@
 #plot and save
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco/ResultsCalibration/Paper/NewExe/6000runs")
-thread <- "Z2"
 
-irri <- read.table(paste0(thread,"Irri/irri_best/Output/River_Flow.out"), quote="\"", comment.char="",skip = 1, header = T, check.names = F)
-obs <- read.delim(paste0(thread,"Irri/init_config/Input/Time_series/discharge_obs_24.txt"), skip = 4, header = T, check.names = F)
-noirri <- read.table(paste0(thread,'NoIrriNew/thread1_best/Output/River_Flow.out'), quote="\"", comment.char="",skip = 1, header = T, check.names = F)
-prec <- read.csv(paste0(thread,"NoIrriNew/thread1_best/Input/Time_series/rain_daily.dat"), sep="", skip = 2, header = T, check.names = F )
+irri <- read.table("Z2Irri/irri_best/Output/River_Flow.out", quote="\"", comment.char="",skip = 1, header = T, check.names = F)
+obs <- read.delim("Z2Irri/init_config/Input/Time_series/discharge_obs_24.txt", skip = 4, header = T, check.names = F)
+noirri <- read.csv("Z2NoIrriNew/thread1_best/Output/River_Flow.out", sep="", skip=1, header = T, check.names = F)
+
+prec <- read.csv("Z2NoIrriNew/thread1_best/Input/Time_series/rain_daily.dat", sep="", skip = 2, header = T, check.names = F )
 
 obs$Date <-  paste(obs$YYYY,obs$MM,obs$DD, sep = "-")
 obs$Date <- as.POSIXct(obs$Date, format = c("%Y-%m-%d"))
@@ -45,7 +45,7 @@ for (i in subs){
 }
 
 ## multiple plots in one graphic
-subs <- c('58', '73')
+subs <- c('58', '96')
 years <- as.POSIXct(c('2000-01-01', '2001-01-01','2002-01-01','2003-01-01', '2004-01-01', '2005-01-01', '2006-06-01', '2007-01-01', '2008-01-01',
                       '2009-01-01','2010-01-01','2011-01-01','2012-01-01','2012-01-01','2014-01-01', '2015-01-01'))
 
