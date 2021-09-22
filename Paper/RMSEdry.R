@@ -87,7 +87,7 @@ graph <-  dygraph(Vis, main= "78")
 saveWidget(graph,paste("90","_obs.html", sep=""))
 
 
-### imulation days ofdry seasons were derived visually/manually:
+### simulation days ofdry seasons were derived visually/manually:
 sub13 <- c(92:306,397:682,742:1036,1217:1401,1582:1783,1947:2131,2312:2596,2677:2861,3044:3226,
            3407:3575,3759:3941,4122:4304,4487:4686,4856:5077,5142:5416)
 sub15 <- c(92:306,464:640,822:1036,1202:1401,1582:1804,1926:2131,2322:2471,2677:2880,3042:3243,
