@@ -166,9 +166,9 @@ names(Mmp_total)[1] <- "Month"
 Mmp_total
 
 png(file = "~/Workspace/RioSaoFrancisco/ERA5_PobsMMP.png", bg = "white", width = 2480, height = 1748, res = 300)
-plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", main = "Mean monthly precipitation")
-lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l")
-legend("topright", legend = c("Observed","ERA5"), col = c("black","red"), lty=1, cex=0.8)
+plot(Mmp_total$Mmp_total~as.numeric(Mmo_total$Month), type = "l", col="red", ylim = c(0,200), xlab = "Month", ylab = "P [mm]", lwd = 2, cex.lab = 1.2)
+lines(Mmo_total$Mmo_total~as.numeric(Mmo_total$Month), type ="l", lwd = 2)
+legend("topright", legend = c("Observed","ERA5"), col = c("black","red"), lty=1, cex=1.2)
 png(file = "~/Workspace/RioSaoFrancisco/EpvsNSE.png", bg = "white", width = 2480, height = 1748, res = 300)
 dev.off()
 

@@ -1,7 +1,7 @@
 rm(list = ls())
 setwd("~/Workspace/RioSaoFrancisco")
 ddsIrriCal <- read.delim("C:/Users/Admin/Desktop/ddsIrriCal.pro")
-ddsNoIrri <- read.delim("C:/Users/Admin/Desktop/ddsNoIrri.pro")
+ddsNoIrri <- read.delim("C:/Users/Admin/Desktop/ddsNoIrriNew.pro")
 
 ddsIrriCal <- ddsIrriCal[,-c(14,29,43)]
 
